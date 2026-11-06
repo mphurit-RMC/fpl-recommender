@@ -69,7 +69,7 @@ textarea,.in{width:100%;font:inherit;padding:10px 12px;border-radius:10px;border
 <p class="sub" id="sugsub"></p>
 <div class="card hzc" data-hz></div>
 <div id="sug"></div>
-<p class="note">วิธีคิด: คะแนน = 0.5×ฟอร์ม + 0.3×แต้มที่ FPL คาด GW10 + 2×(3 − ความยากเฉลี่ยในช่วงที่เลือก ค่าเริ่มต้น 4 สัปดาห์) แล้วเทียบกับผู้เล่นตำแหน่งเดียวกันที่เล่นอย่างน้อย 450 นาที: อยู่ 35% บน = ถือ, 30% ล่าง = ขาย, ที่เหลือ = ถกเถียง ถ้าบาดเจ็บหรือแบนจะขายทันที สงสัยบาดเจ็บจะไม่ได้เกินระดับถกเถียง นี่คือสัญญาณช่วยตัดสินใจ ไม่ใช่การรับประกันผล</p>
+<p class="note">วิธีคิด: คะแนน = 0.5×ฟอร์ม + 0.3×แต้มที่ FPL คาดใน GW ถัดไป + 2×(3 − ความยากเฉลี่ยในช่วงที่เลือก ค่าเริ่มต้น 4 สัปดาห์) แล้วเทียบกับผู้เล่นตำแหน่งเดียวกันที่เล่นอย่างน้อย 450 นาที: อยู่ 35% บน = ถือ, 30% ล่าง = ขาย, ที่เหลือ = ถกเถียง ถ้าบาดเจ็บหรือแบนจะขายทันที สงสัยบาดเจ็บจะไม่ได้เกินระดับถกเถียง นี่คือสัญญาณช่วยตัดสินใจ ไม่ใช่การรับประกันผล</p>
 </section>
 
 <section id="overview" class="on">
@@ -163,7 +163,7 @@ const OV={"Bruno":{"pr":11.7,"pts":35,"form":1.0,"own":21.9,"ep":1.0,"gw9":2,"ne
 ALL.forEach(p=>{const o=OV[p.s];if(o){const nw=o.news;delete o.news;Object.assign(p,o,{as:"FPL ทางการ ณ GW9 (ยังไม่จบ)"});if(nw)p.note+=" · ข่าว FPL: "+nw}});
 let rg="ALL",sel=null;
 function ov(){
- const base=R.filter(r=>flt==="ALL"||r[2]===flt).sort((a,b)=>b[4]-a[4]),D=rg==="TOP"?base.slice(0,Math.ceil(base.length/2)):base,W=360,H=320,L=30,B=26,T=10,Rt=12,my=Math.ceil(Math.max(...R.map(r=>r[4]))/20)*20,X=v=>L+(v-3.5)/12.5*(W-L-Rt),Y=v=>H-B-v/my*(H-B-T);
+ const base=R.filter(r=>flt==="ALL"||r[2]===flt).sort((a,b)=>b[4]-a[4]),D=rg==="TOP"?base.slice(0,Math.ceil(base.length/2)):base,W=360,H=320,L=30,B=26,T=10,Rt=12,my=Math.max(20,Math.ceil(Math.max(...R.map(r=>r[4]))/20)*20),X=v=>L+(v-3.5)/12.5*(W-L-Rt),Y=v=>H-B-v/my*(H-B-T);
  $("#rng").innerHTML=[["ALL","ทั้งหมด ("+base.length+")"],["TOP","ท็อป 50% ("+Math.ceil(base.length/2)+")"]].map(k=>'<button aria-pressed="'+(k[0]===rg)+'" data-r="'+k[0]+'">'+k[1]+'</button>').join("");
  let s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="กราฟราคากับแต้มรวมของผู้เล่นทั้งหมด">';
  for(let v=0;v<=my;v+=20)s+='<line class="ax" x1="'+L+'" x2="'+(W-Rt)+'" y1="'+Y(v)+'" y2="'+Y(v)+'"/><text class="lb" x="2" y="'+(Y(v)+3)+'">'+v+'</text>';
@@ -174,11 +174,13 @@ function ov(){
  if(sel)s+='<circle cx="'+X(sel[3])+'" cy="'+Y(sel[4])+'" r="9" fill="none" stroke="var(--ink)" stroke-width="1.5"/>';
  $("#scatter").innerHTML=s+'</svg>';
  $("#scatter").onclick=e=>{const sv=e.target.closest("svg");if(!sv)return;const b=sv.getBoundingClientRect(),k=W/b.width,x=(e.clientX-b.left)*k,y=(e.clientY-b.top)*k;let best=null,bd=18;D.forEach(r=>{const d=Math.hypot(X(r[3])-x,Y(r[4])-y);if(d<bd){bd=d;best=r}});if(best){sel=best;ov()}};
- $("#info").innerHTML=sel?'<b>'+sel[0]+'</b> · '+sel[1]+' · '+sel[2]+' · £'+sel[3]+'m<br>'+sel[4]+' แต้ม · ฟอร์ม '+sel[5]+' · เจ้าของ '+sel[6]+'%<br>GW9 '+sel[8]+' แต้ม (ยังไม่จบ) · FPL คาด GW10 '+sel[7]+' แต้ม · '+(sel[4]/sel[3]).toFixed(1)+' แต้ม/£m':"แตะจุดบนกราฟเพื่อดูรายละเอียดผู้เล่น";
- const T10=D.filter(r=>r[9]>=450).sort((a,b)=>b[4]/b[3]-a[4]/a[3]).slice(0,10),mv=T10[0][4]/T10[0][3];
- $("#bars").innerHTML=T10.map(r=>{const v=r[4]/r[3];return '<div class="bar"><span>'+r[0]+'</span><i style="width:'+v/mv*100+'%;background:'+COL[r[2]]+'"></i><b>'+v.toFixed(1)+'</b></div>'}).join("")}
+ const lastGW=window.fplLatestFinishedGW||"ล่าสุด",nextGW=window.fplNextGameweek||"ถัดไป";
+ $("#info").innerHTML=sel?'<b>'+sel[0]+'</b> · '+sel[1]+' · '+sel[2]+' · £'+sel[3]+'m<br>'+sel[4]+' แต้ม · ฟอร์ม '+sel[5]+' · เจ้าของ '+sel[6]+'%<br>GW'+lastGW+' '+(sel[8]==null?'—':sel[8])+' แต้ม · FPL คาด GW'+nextGW+' '+(sel[7]==null?'—':sel[7])+' แต้ม · '+(sel[3]>0?(sel[4]/sel[3]).toFixed(1):'—')+' แต้ม/£m':"แตะจุดบนกราฟเพื่อดูรายละเอียดผู้เล่น";
+ const T10=D.filter(r=>r[9]>=450 && r[3]>0).sort((a,b)=>b[4]/b[3]-a[4]/a[3]).slice(0,10);
+ const mv=T10.length?T10[0][4]/T10[0][3]:1;
+ $("#bars").innerHTML=T10.length?T10.map(r=>{const v=r[4]/r[3];return '<div class="bar"><span>'+r[0]+'</span><i style="width:'+v/mv*100+'%;background:'+COL[r[2]]+'"></i><b>'+v.toFixed(1)+'</b></div>'}).join(""):'<p class="note">ยังไม่มีผู้เล่นที่ลงเล่นถึง 450 นาทีในข้อมูลชุดนี้ จึงยังคำนวณ 10 อันดับความคุ้มค่าไม่ได้</p>' }
 document.addEventListener("click",e=>{const b=e.target.closest("[data-r]");if(b){rg=b.dataset.r;ov()}});
-function fix(){const TM=Object.keys(FX).map(t=>({t,a:FX[t].slice(0,HZ).reduce((s,f)=>s+f[2],0)/HZ})).sort((a,b)=>a.a-b.a||a.t.localeCompare(b.t));
+function fix(){const TM=Object.keys(FX).map(t=>{const fs=(FX[t]||[]).slice(0,HZ);return {t,a:fs.length?fs.reduce((s,f)=>s+(Number(f[2])||3),0)/fs.length:3}}).sort((a,b)=>a.a-b.a||a.t.localeCompare(b.t));
  const ok=r=>r[9]>=300&&(r[10]==="a"||r[10]==="d")&&(flt==="ALL"||r[2]===flt),pk=t=>R.filter(r=>r[1]===t&&ok(r)).sort((a,b)=>b[5]-a[5]||b[4]-a[4]),ln=r=>'<div class="pl2"><span><b>'+r[0]+'</b>'+(r[10]==="d"?" ⚠️":"")+' <small>'+r[2]+' £'+r[3]+'m</small></span><span>ฟอร์ม '+r[5]+' · '+r[4]+' แต้ม · คาด '+r[7]+'</span></div>';
  const ez=TM.slice(0,10).flatMap(x=>pk(x.t).slice(0,3)).sort((a,b)=>b[5]-a[5]).slice(0,8);
  $("#topPick").innerHTML='<b>ฟอร์มดีที่สุดจากทีมโปรแกรมง่าย 10 อันดับแรก</b>'+ez.map(r=>'<div class="pl2"><span><b>'+r[0]+'</b> <small>'+r[1]+' '+r[2]+' £'+r[3]+'m</small></span><span>ฟอร์ม '+r[5]+' · '+r[4]+' แต้ม</span></div>').join("");
@@ -205,11 +207,11 @@ function card(p,full){
  '<div class="stats"><div><b>'+(p.pts??"—")+'</b><span>แต้ม</span></div><div><b>'+(p.form??"—")+'</b><span>ฟอร์ม</span></div><div><b>'+(p.own==null?"—":p.own+"%")+'</b><span>เจ้าของ</span></div></div></button>'+
  '<div class="more"><div class="meta">'+(p.fx?"นัดถัดไป: "+p.fx+" · ":"")+'ข้อมูล ณ '+(p.as||"27 ต.ค.")+'</div><p class="note">'+p.note+'</p></div></div>'}
 const AV={},PS={},VL={keep:["ถือ","g"],mid:["ถกเถียง",""],sell:["ขาย","w"]};
-const sc=r=>.5*r[5]+.3*r[7]+2*(3-AV[r[1]]);
-function setAV(){Object.keys(FX).forEach(t=>AV[t]=(FX[t]||[]).slice(0,HZ).reduce((s,f)=>s+f[2],0)/HZ);
+const sc=r=>.5*(Number(r[5])||0)+.3*(Number(r[7])||0)+2*(3-(Number(AV[r[1]])||3));
+function setAV(){Object.keys(FX).forEach(t=>{const fs=(FX[t]||[]).slice(0,HZ);AV[t]=fs.length?fs.reduce((s,f)=>s+(Number(f[2])||3),0)/fs.length:3});
 ["GKP","DEF","MID","FWD"].forEach(p=>PS[p]=R.filter(r=>r[2]===p&&r[9]>=450).map(sc).sort((a,b)=>a-b))}
 setAV();
-function vd(r){const st=r[10],s=sc(r),p=PS[r[2]],pc=p.filter(x=>x<=s).length/p.length,w=[];
+function vd(r){const st=r[10],s=sc(r),p=PS[r[2]]||[],pc=p.length?p.filter(x=>x<=s).length/p.length:.5,w=[];
  if(st!=="a"&&st!=="d")return["sell","บาดเจ็บ/ไม่พร้อมเล่น"];
  if(st==="d")w.push("สงสัยบาดเจ็บ ⚠️");
  w.push(r[5]>=5?"ฟอร์มดี "+r[5]:r[5]<3?"ฟอร์มต่ำ "+r[5]:"ฟอร์ม "+r[5]);
@@ -218,17 +220,17 @@ function vd(r){const st=r[10],s=sc(r),p=PS[r[2]],pc=p.filter(x=>x<=s).length/p.l
  let v=pc>=.65?"keep":pc<=.3?"sell":"mid";if(st==="d"&&v==="keep")v="mid";
  return[v,w.join(" · ")]}
 function al(r){const c=R.filter(x=>x[2]===r[2]&&x[3]<=r[3]&&x[9]>=450&&x[10]==="a"&&x[0]!==r[0]).sort((a,b)=>sc(b)-sc(a)).slice(0,2);
- return c.length?'<div class="note">แทนได้: '+c.map(x=>x[0]+' ('+x[1]+' £'+x[3]+'m · ฟอร์ม '+x[5]+' · ง่าย '+AV[x[1]].toFixed(2)+')').join(" / ")+'</div>':""}
+ return c.length?'<div class="note">แทนได้: '+c.map(x=>x[0]+' ('+x[1]+' £'+x[3]+'m · ฟอร์ม '+x[5]+' · ง่าย '+(Number(AV[x[1]])||3).toFixed(2)+')').join(" / ")+'</div>':""}
 function row(r,alt){const v=vd(r);return '<div class="row"><span><b>'+r[0]+'</b> <small class="meta">'+r[1]+' '+r[2]+' £'+r[3]+'m · ถือ '+r[6]+'%</small></span><span class="tag '+VL[v[0]][1]+'" style="margin:0">'+VL[v[0]][0]+'</span></div><div class="meta">'+v[1]+'</div><div style="margin-top:4px">'+chips(r[1])+'</div>'+(alt&&v[0]!=="keep"?al(r):"")}
 function sug(){const T=[...R].sort((a,b)=>b[6]-a[6]).slice(0,40),g={sell:[],mid:[],keep:[]};T.forEach(r=>g[vd(r)[0]].push(r));
  $("#sugsub").textContent="40 คนที่ถือเยอะที่สุด (ตั้งแต่ "+(T[39]?.[6]??0)+"% ขึ้นไป) · ข้อมูล FPL สด · โปรแกรม GW"+(window.fplNextGameweek||"ถัดไป");
  $("#sug").innerHTML=[["sell","ควรขาย/เปลี่ยน"],["mid","ถกเถียง"],["keep","ควรถือ"]].map(([k,t])=>'<h2>'+t+' ('+g[k].length+')</h2>'+g[k].map(r=>'<div class="card '+(k==="sell"?"sell":k==="keep"?"buy":"")+'">'+row(r,1)+'</div>').join("")).join("")+dif()}
 function dif(){const D=R.filter(r=>r[6]<8&&r[9]>=300&&r[10]==="a"&&r[5]>=4).sort((a,b)=>sc(b)-sc(a)).slice(0,8);
  return '<h2>Differential: ถือน้อยกว่า 8% แต่น่าสนใจ</h2><p class="note">เกณฑ์: ฟอร์ม ≥4, เล่นอย่างน้อย 300 นาที, ไม่บาดเจ็บ, จัดอันดับด้วยคะแนนเดียวกับด้านบน</p>'+(D.map(r=>'<div class="card buy">'+row(r,0)+'<div class="meta">xGI/90 '+r[11]+' · ICT/90 '+r[15]+'</div></div>').join("")||'<p class="note">ไม่มีผู้เล่นที่เข้าเกณฑ์</p>')}
-function tb(H,D,K,x){const rg=K.map(k=>[Math.min(...D.map(d=>d[k[0]])),Math.max(...D.map(d=>d[k[0]]))]);
- return '<div class="hw"><table class="ht"><tr><th>'+H+'</th>'+K.map(k=>'<th>'+k[1]+'</th>').join("")+'</tr>'+D.map(d=>'<tr><td><b>'+d[0]+'</b><br><small>'+d[1]+' £'+d[3]+'m · '+d[6]+'% · ง่าย '+AV[d[1]].toFixed(2)+'</small></td>'+K.map((k,i)=>'<td style="background:hsl('+Math.round((d[k[0]]-rg[i][0])/(rg[i][1]-rg[i][0]||1)*120)+' 65% 45% / .35)">'+d[k[0]]+'</td>').join("")+'</tr><tr><td colspan="'+(K.length+1)+'" style="text-align:left">'+(x?x(d)+" ":"")+chips(d[1])+'</td></tr>').join("")+'</table></div>'}
+function tb(H,D,K,x){if(!D.length)return '<p class="note">ยังไม่มีผู้เล่นที่เข้าเกณฑ์สำหรับตารางนี้ในข้อมูลล่าสุด</p>';const rg=K.map(k=>[Math.min(...D.map(d=>Number(d[k[0]])||0)),Math.max(...D.map(d=>Number(d[k[0]])||0))]);
+ return '<div class="hw"><table class="ht"><tr><th>'+H+'</th>'+K.map(k=>'<th>'+k[1]+'</th>').join("")+'</tr>'+D.map(d=>'<tr><td><b>'+d[0]+'</b><br><small>'+d[1]+' £'+d[3]+'m · '+d[6]+'% · ง่าย '+(Number(AV[d[1]])||3).toFixed(2)+'</small></td>'+K.map((k,i)=>'<td style="background:hsl('+Math.round(((Number(d[k[0]])||0)-rg[i][0])/(rg[i][1]-rg[i][0]||1)*120)+' 65% 45% / .35)">'+(d[k[0]]==null?'—':d[k[0]])+'</td>').join("")+'</tr><tr><td colspan="'+(K.length+1)+'" style="text-align:left">'+(x?x(d)+" ":"")+chips(d[1])+'</td></tr>').join("")+'</table></div>'}
 function stats(){const ok=(p,n)=>R.filter(r=>r[2]===p&&r[9]>=450&&r[10]==="a").sort((a,b)=>b[12]-a[12]).slice(0,n),K=[[12,"DC/90"],[13,"แต้ม/90"],[5,"ฟอร์ม"]];
- const hasDC=R.some(r=>r[12]>0);
+ const hasDC=R.some(r=>r[12]!=null && Number(r[12])>0);
  $("#dcD").innerHTML=hasDC?tb("กองหลัง",ok("DEF",12),K,d=>"ถึง "+Math.round(d[12]/10*100)+"% ของเกณฑ์ 10"):"<p class=note>API ทางการไม่ได้ส่งสถิติ Defensive Contribution ในรอบนี้ จึงยังไม่แสดงอันดับ DefCon เพื่อหลีกเลี่ยงการแสดงค่าที่ไม่ยืนยัน</p>";
  $("#dcM").innerHTML=hasDC?tb("กองกลาง",ok("MID",10),K,d=>"ถึง "+Math.round(d[12]/12*100)+"% ของเกณฑ์ 12"):"<p class=note>API ทางการไม่ได้ส่งสถิติ Defensive Contribution ในรอบนี้ จึงยังไม่แสดงอันดับ DefCon เพื่อหลีกเลี่ยงการแสดงค่าที่ไม่ยืนยัน</p>";
  const I=R.filter(r=>r[2]!=="GKP"&&(flt==="ALL"||r[2]===flt)&&r[9]>=450&&r[10]==="a").sort((a,b)=>b[15]-a[15]).slice(0,15);
@@ -236,7 +238,8 @@ function stats(){const ok=(p,n)=>R.filter(r=>r[2]===p&&r[9]>=450&&r[10]==="a").s
 function team(){let id="",own=[];
  try{id=localStorage.getItem("fpl_id")||"";own=JSON.parse(localStorage.getItem("fpl_own2")||"[]")}catch(e){}
  const sv=()=>{try{localStorage.setItem("fpl_id",id);localStorage.setItem("fpl_own2",JSON.stringify(own))}catch(e){}},nz=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(),K=r=>r[0]+"|"+r[1],inp=$("#eid");inp.value=id;
- const show=()=>{$("#eidOut").innerHTML=id?'รหัส '+id+' · <a href="https://fantasy.premierleague.com/entry/'+id+'/event/9" target="_blank" rel="noopener">เปิดทีมในเว็บ FPL</a>':"ใส่รหัสทีมเพื่อบันทึกไว้ในเครื่องนี้"};
+ const show=()=>{$("#eidOut").innerHTML=id?'รหัส '+id+' · <a href="https://fantasy.premierleague.com/entry/'+id+'/event/'+(window.fplNextGameweek||1)+'" target="_blank" rel="noopener">เปิดทีมในเว็บ FPL</a>':"ใส่รหัสทีมเพื่อบันทึกไว้ในเครื่องนี้"};
+ window.refreshTeamEntryLink=show;
  const find=q=>{q=nz(q.trim());return q?R.filter(r=>nz(r[0]).includes(q)||nz(r[1])===q).sort((a,b)=>b[6]-a[6]):[]};
  const render=()=>{const S=own.map(k=>R.find(r=>K(r)===k)).filter(Boolean),od=["sell","mid","keep"],o={sell:0,mid:0,keep:0},V=S.map(r=>[vd(r),r]).sort((a,b)=>od.indexOf(a[0][0])-od.indexOf(b[0][0])||b[1][6]-a[1][6]);V.forEach(x=>o[x[0][0]]++);
   $("#mine").innerHTML=S.length?S.map(r=>'<button class="chp" data-o="'+K(r)+'">'+r[0]+' ✕</button>').join(""):'<p class="note">ยังไม่ได้เลือกผู้เล่น</p>';
@@ -259,63 +262,102 @@ function route(){const t=["summary","overview","fixtures","compare","team"].incl
  document.querySelectorAll("nav a").forEach(a=>{if(a.dataset.t!==t)a.removeAttribute("aria-current")});scrollTo(0,0)}
 addEventListener("hashchange",route);route();
 
-// Live data adapter: maps the official updater's data.json into the existing UI schema.
+// Live data adapter: official data.json -> the existing website data model.
 (async function loadLiveFPL(){
   const metaEl=document.getElementById("fplDataMeta");
+  const num=v=>{const n=Number(v);return Number.isFinite(n)?n:0};
+  const norm=v=>String(v??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^\p{L}\p{N}]/gu,"");
   try{
-    const response=await fetch("./data.json?ts="+Date.now(),{cache:"no-store"});
-    if(!response.ok) throw new Error("HTTP "+response.status);
+    const dataURL=new URL("data.json",document.baseURI);
+    dataURL.searchParams.set("_",String(Date.now()));
+    const response=await fetch(dataURL.toString(),{cache:"no-store"});
+    if(!response.ok)throw new Error("data.json HTTP "+response.status);
     const data=await response.json();
-    if(!data || !Array.isArray(data.players) || data.players.length<300 || !data.fixtures || !data.meta) throw new Error("รูปแบบ data.json ไม่ถูกต้อง");
-    const num=(v)=>v==null?0:Number(v)||0;
+    if(!data||!data.meta||!Array.isArray(data.players)||data.players.length<300||!data.fixtures||typeof data.fixtures!=="object"){
+      throw new Error("data.json schema validation failed");
+    }
+
     const livePlayers=data.players;
-    const liveR=livePlayers.map(p=>[
-      p.name,p.team,p.position,num(p.price),num(p.points),num(p.form),num(p.ownership),
-      p.expected_points==null?0:num(p.expected_points),p.last_event_points==null?0:num(p.last_event_points),
-      num(p.minutes),p.status||"u",num(p.xgi90),p.dc90==null?0:num(p.dc90),num(p.points90),
-      0,p.minutes?Math.round(num(p.ict)*90/num(p.minutes)*100)/100:0,
-      num(p.influence90),num(p.creativity90),num(p.threat90)
-    ]);
+    const liveR=livePlayers.map(p=>{
+      const mins=Math.max(0,num(p.minutes));
+      const ict90=mins>0?Math.round((num(p.ict)*90/mins)*100)/100:0;
+      return [
+        String(p.name||p.second_name||"Unknown"),String(p.team||"UNK"),String(p.position||"MID"),
+        num(p.price),num(p.points),num(p.form),num(p.ownership),
+        p.expected_points==null?0:num(p.expected_points),
+        p.last_event_points==null?null:num(p.last_event_points),
+        mins,String(p.status||"u"),num(p.xgi90),
+        p.dc90==null?null:num(p.dc90),num(p.points90),
+        0,ict90,num(p.influence90),num(p.creativity90),num(p.threat90)
+      ];
+    });
+
     const liveFX={};
     Object.entries(data.fixtures).forEach(([team,fixtures])=>{
-      liveFX[team]=(fixtures||[]).map(f=>[f.opponent,f.side,Number(f.difficulty)||3]);
+      liveFX[team]=(Array.isArray(fixtures)?fixtures:[]).map(f=>[
+        String(f.opponent||"—"),String(f.side||"H"),Math.min(5,Math.max(2,num(f.difficulty)||3))
+      ]);
     });
-    if(!Object.keys(liveFX).length) throw new Error("ไม่พบข้อมูลโปรแกรมแข่งขัน");
+    if(Object.keys(liveFX).length<10)throw new Error("data.json has too few teams in fixtures");
 
-    // Retain manually written scouting notes and buy/hold/sell tags where player names match.
-    const norm=(v)=>String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+    // Match the old hand-written scouting notes to live players; live numeric fields always win.
     const curated=[...P,...Q];
-    const curatedFor=(player)=>curated.find(c=>{
-      const a=norm(c.s||c.n), b=norm(player.name);
-      return a && (a===b || b.includes(a) || a.includes(b));
-    });
+    const curatedFor=player=>{
+      const haystack=norm([player.name,player.first_name,player.second_name].filter(Boolean).join(" "));
+      for(const c of curated){
+        const aliases=[c.s,c.n].filter(Boolean).map(norm).filter(Boolean);
+        if(aliases.some(a=>a===norm(player.name)||(a.length>=5&&haystack.includes(a))))return c;
+      }
+      return null;
+    };
     const liveALL=livePlayers.map(p=>{
       const c=curatedFor(p);
       return {
-        n:p.name,s:p.name,c:p.team,pos:p.position,pr:num(p.price),pts:num(p.points),
-        own:num(p.ownership),form:num(p.form),xgi:num(p.xgi90),best:null,
+        n:String(p.name||p.second_name||"Unknown"),s:String(p.name||p.second_name||"Unknown"),
+        c:String(p.team||"UNK"),pos:String(p.position||"MID"),pr:num(p.price),pts:num(p.points),
+        own:num(p.ownership),form:num(p.form),xgi:num(p.xgi90),best:c?.best??null,
         v:c?.v||"",note:c?.note||(p.news||"ไม่มีบันทึกสเกาต์เพิ่มเติม"),
-        as:"FPL ทางการ · "+(data.meta.latest_finished_gameweek?"หลัง GW"+data.meta.latest_finished_gameweek:"ข้อมูลล่าสุด")
+        as:"Official FPL API · "+(data.meta.latest_finished_gameweek?"หลัง GW"+data.meta.latest_finished_gameweek:"ข้อมูลล่าสุด")
       };
     });
 
+    // Assign only after the payload has passed validation and conversion.
     R=liveR;
     FX=liveFX;
     ALL.splice(0,ALL.length,...liveALL);
     const fixtureWeeks=Array.isArray(data.meta.fixture_gameweeks)?data.meta.fixture_gameweeks:[];
-    window.fplNextGameweek=fixtureWeeks[0]||((data.meta.latest_finished_gameweek||0)+1);
+    window.fplNextGameweek=fixtureWeeks[0]||((num(data.meta.latest_finished_gameweek)||0)+1);
     window.fplLatestFinishedGW=data.meta.latest_finished_gameweek||null;
     HZ=Math.max(1,Math.min(4,fixtureWeeks.length||4));
+
     const updated=data.meta.updated_at?new Date(data.meta.updated_at):null;
-    const stamp=updated&&!Number.isNaN(updated.getTime())?updated.toLocaleString("th-TH",{dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Bangkok"}):"เวลาไม่ระบุ";
-    const gw=data.meta.latest_finished_gameweek?"GW"+data.meta.latest_finished_gameweek:"ยังไม่มี GW ที่จบ";
-    metaEl.textContent="ข้อมูลสดจาก Official FPL API · "+num(data.meta.player_count||livePlayers.length)+" ผู้เล่น · ล่าสุด "+gw+" · อัปเดต "+stamp+" (เวลาไทย)";
-    const overviewSub=document.getElementById("overviewSub");if(overviewSub)overviewSub.textContent=livePlayers.filter(p=>num(p.minutes)>0).length+" ผู้เล่นที่มีนาทีลงสนาม · ข้อมูลทางการ "+gw+" · จุดเหนือเส้นประ = เกิน 8 แต้มต่อ £1m · แตะจุดเพื่อดูรายละเอียด";
+    const stamp=updated&&!Number.isNaN(updated.getTime())
+      ?updated.toLocaleString("th-TH",{dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Bangkok"})
+      :"เวลาไม่ระบุ";
+    const latestGW=data.meta.latest_finished_gameweek?"GW"+data.meta.latest_finished_gameweek:"ยังไม่มี GW ที่จบ";
+    const playedCount=livePlayers.filter(p=>num(p.minutes)>0).length;
+    if(metaEl)metaEl.textContent="ข้อมูลสดจาก Official FPL API · "+livePlayers.length+" ผู้เล่น · "+latestGW+" · อัปเดต "+stamp+" (เวลาไทย)";
+    const overviewSub=document.getElementById("overviewSub");
+    if(overviewSub)overviewSub.textContent=playedCount+" ผู้เล่นที่มีนาทีลงสนาม จากทั้งหมด "+livePlayers.length+" คน · ข้อมูลทางการ "+latestGW+" · จุดเหนือเส้นประ = เกิน 8 แต้มต่อ £1m · แตะจุดเพื่อดูรายละเอียด";
     document.querySelectorAll(".hz").forEach(el=>{el.max=String(Math.max(1,fixtureWeeks.length||4));});
-    setAV();draw();sug();if(window.RT)window.RT();hzL();
+
+    // Refresh all existing sections without replacing their UI or local team selections.
+    try{
+      setAV();
+      draw();
+      sug();
+      if(window.RT)window.RT();
+      hzL();
+      if(window.refreshTeamEntryLink)window.refreshTeamEntryLink();
+    }catch(renderError){
+      console.error("FPL data loaded, but a UI section could not be redrawn:",renderError);
+      if(metaEl)metaEl.textContent="โหลดข้อมูลสดแล้ว ("+livePlayers.length+" ผู้เล่น) แต่มีบางส่วนของหน้าจอแสดงผลไม่ครบ กรุณารีเฟรชหน้าอีกครั้ง";
+      return;
+    }
+    if(metaEl)metaEl.textContent="ข้อมูลสดจาก Official FPL API · "+livePlayers.length+" ผู้เล่น · "+latestGW+" · อัปเดต "+stamp+" (เวลาไทย)";
   }catch(err){
-    console.warn("FPL live data unavailable; using embedded fallback snapshot:",err);
-    if(metaEl)metaEl.textContent="โหลดข้อมูลสดไม่สำเร็จ · กำลังแสดงข้อมูลสำรองที่ฝังไว้ในหน้าเว็บ (อาจไม่ใช่ข้อมูลล่าสุด)";
+    console.error("Unable to load official FPL data.json; embedded backup remains active:",err);
+    if(metaEl)metaEl.textContent="โหลดข้อมูลสดไม่สำเร็จ · กำลังแสดงข้อมูลสำรองที่ฝังไว้ในหน้าเว็บ ("+String(err.message||err)+")";
   }
 })();
 </script>

@@ -64,7 +64,8 @@ def main():
 
     players = []
     for p in elements:
-        st = p.get("stats") or {}
+        # The official bootstrap-static API returns season stats as flat top-level fields on each element.
+        st = p
         mins = int(number(st.get("minutes")))
         team = teams.get(p.get("team"), {})
         status = p.get("status") or "a"

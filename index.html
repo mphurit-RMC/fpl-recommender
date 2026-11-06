@@ -278,7 +278,7 @@ addEventListener("hashchange",route);route();
     }
 
     const livePlayers=data.players;
-    const liveR=livePlayers.map(p=>{
+    const liveR=livePlayers.filter(p=>num(p.minutes)>0).sort((a,b)=>num(b.points)-num(a.points)).map(p=>{
       const mins=Math.max(0,num(p.minutes));
       const ict90=mins>0?Math.round((num(p.ict)*90/mins)*100)/100:0;
       return [

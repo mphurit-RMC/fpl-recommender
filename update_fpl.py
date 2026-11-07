@@ -109,7 +109,16 @@ def main() -> None:
         influence = number(stat_value(p, "influence"))
         creativity = number(stat_value(p, "creativity"))
         threat = number(stat_value(p, "threat"))
-        xgi = number(stat_value(p, "expected_goal_involvements"))
+        # Season-to-date expected metrics from the official FPL bootstrap endpoint.
+        # Store totals and per-90 rates for the upcoming-week ranking.
+        xg_raw = stat_value(p, "expected_goals")
+        xa_raw = stat_value(p, "expected_assists")
+        xgi_raw = stat_value(p, "expected_goal_involvements")
+        xgc_raw = stat_value(p, "expected_goals_conceded")
+        xg = round(number(xg_raw), 2) if xg_raw not in (None, "") else None
+        xa = round(number(xa_raw), 2) if xa_raw not in (None, "") else None
+        xgi = round(number(xgi_raw), 2) if xgi_raw not in (None, "") else None
+        xgc = round(number(xgc_raw), 2) if xgc_raw not in (None, "") else None
 
         defensive = stat_value(p, "defensive_contribution")
         if defensive is None:
@@ -133,7 +142,13 @@ def main() -> None:
             "minutes": minutes,
             "status": status,
             "news": p.get("news") or "",
-            "xgi90": per90(xgi, minutes),
+            "xg": xg, "xa": xa, "xgi": xgi, "xgc": xgc,
+            "xg90": per90(xg, minutes) if xg is not None else None,
+            "xa90": per90(xa, minutes) if xa is not None else None,
+            "xgi90": per90(xgi, minutes) if xgi is not None else None,
+            "clean_sheets": int(number(stat_value(p, "clean_sheets"))) if stat_value(p, "clean_sheets") not in (None, "") else None,
+            "goals_scored": int(number(stat_value(p, "goals_scored"))),
+            "assists": int(number(stat_value(p, "assists"))),
             "dc90": dc90,
             "points90": per90(total_points, minutes),
             "ict": round(ict, 2),
@@ -188,6 +203,7 @@ def main() -> None:
 
     payload = {
         "meta": {
+            "schema_version": 2,
             "updated_at": datetime.now(timezone.utc).isoformat(),
             "season": bootstrap.get("game_settings", {}).get("season", ""),
             "current_gameweek": first_gw,

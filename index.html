@@ -77,6 +77,9 @@ textarea,.in{width:100%;font:inherit;padding:10px 12px;border-radius:10px;border
 .captain-role{font-size:.72rem;font-weight:800;border-radius:99px;padding:2px 8px;background:var(--acs);color:var(--ac)}
 .captain-role.vc{background:var(--wns);color:var(--wn)}
 .captain-score{font-size:.8rem;color:var(--ac);font-weight:800;white-space:nowrap}
+
+.rank-chart-card{padding:12px}.rank-chart-heading{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.rank-chart-controls{margin:10px 0 8px}.rank-chart-controls button{font-size:.78rem;padding:6px 11px}.rank-chart svg{width:100%;height:auto;display:block;overflow:visible}.rank-chart .gridline{stroke:var(--ln);stroke-width:1}.rank-chart .tick{fill:var(--mu);font-size:11px}.rank-chart .axis-title{fill:var(--ink);font-size:12px;font-weight:700}.rank-chart .player-dot{stroke:var(--sf);stroke-width:1.5;cursor:pointer;opacity:.88}.rank-chart .player-dot:focus{outline:none;stroke:var(--ink);stroke-width:3}.rank-chart .player-label{fill:var(--ink);font-size:10px;font-weight:700;paint-order:stroke;stroke:var(--sf);stroke-width:3px;stroke-linejoin:round;pointer-events:none}.rank-chart-legend{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 8px;font-size:.76rem;color:var(--mu)}.rank-chart-legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}.rank-chart-detail{border-radius:9px;background:var(--bg);padding:9px 10px;font-size:.82rem;color:var(--mu);min-height:40px}.rank-chart-detail b{color:var(--ink)}
+@media(max-width:390px){.rank-chart .tick{font-size:10px}.rank-chart .player-label{font-size:9px}.rank-chart-heading{display:block}}
 @media(min-width:700px){nav{justify-content:center}nav a{min-width:88px}}
 
 </style>
@@ -114,6 +117,17 @@ textarea,.in{width:100%;font:inherit;padding:10px 12px;border-radius:10px;border
 <section id="rank30">
 <h2>Top 30 · ผู้เล่นน่าสนใจประจำสัปดาห์</h2>
 <p class="sub" id="rankSub">กำลังโหลดอันดับผู้เล่นสำหรับ Gameweek ถัดไป…</p>
+<div class="card rank-chart-card">
+ <div class="rank-chart-heading"><b>ภาพรวม Top 30 · Fixture vs Potential</b><span class="priority-meta" id="rankChartGW">GW ถัดไป</span></div>
+ <p class="note">มุมมองกราฟเลือกได้ 2 แบบ · ด้านซ้ายโปรแกรมง่ายกว่า (FDR ต่ำ) ด้านบนมีศักยภาพ/คะแนนคาดการณ์สูงกว่า · สีแยกตำแหน่ง · ขนาดจุดแทน Model Score</p>
+ <div class="chips rank-chart-controls" id="rankChartModes">
+  <button type="button" data-rank-mode="ep" aria-pressed="true">EP_next vs FDR</button>
+  <button type="button" data-rank-mode="xgi" aria-pressed="false">xGI/90 vs FDR</button>
+ </div>
+ <div id="rankChart" class="rank-chart" aria-live="polite"><p class="note">กำลังเตรียมกราฟ…</p></div>
+ <div class="rank-chart-legend"><span><i style="background:#8a6bd1"></i>GKP</span><span><i style="background:#2a8bd6"></i>DEF</span><span><i style="background:#1f9d55"></i>MID</span><span><i style="background:#e08a1a"></i>FWD</span></div>
+ <div id="rankChartDetail" class="rank-chart-detail">แตะจุดบนกราฟเพื่อดูรายละเอียดผู้เล่น</div>
+</div>
 <div class="card" id="rankPanel"><p class="note">กำลังโหลดข้อมูล FPL สด</p></div>
 <div class="method-note">Top 30 คัดจากทุกตำแหน่งโดยใช้ Model Score แล้วจัดกลุ่มแสดงเป็น GKP / DEF / MID / FWD ภายในแต่ละกลุ่มเรียงตาม Priority สูงไปต่ำ พร้อมคงอันดับรวมไว้ · ผู้เล่นนอกประตูใช้ EP 35%, xGI/90 30%, FDR 20%, นาที/ความพร้อม 15% · ผู้รักษาประตูไม่มี xGI จึงปรับน้ำหนักเป็น EP 50%, FDR 28.6%, นาที/ความพร้อม 21.4% · EP_next เป็นค่าทางการจาก FPL ส่วน Model Score เป็นคะแนนเปรียบเทียบของเว็บไซต์ · xG/xA/CS เป็นสถิติสะสม ไม่ใช่การคาดการณ์รายนัด และไม่มี xCS รายบุคคลใน API ชุดนี้</div>
 </section>
@@ -288,6 +302,57 @@ function stats(){const ok=(p,n)=>R.filter(r=>r[2]===p&&r[9]>=450&&r[10]==="a").s
  $("#dcM").innerHTML=hasDC?tb("กองกลาง",ok("MID",10),K,d=>"ถึง "+Math.round(d[12]/12*100)+"% ของเกณฑ์ 12"):"<p class=note>API ทางการไม่ได้ส่งสถิติ Defensive Contribution ในรอบนี้ จึงยังไม่แสดงอันดับ DefCon เพื่อหลีกเลี่ยงการแสดงค่าที่ไม่ยืนยัน</p>";
  const I=R.filter(r=>r[2]!=="GKP"&&(flt==="ALL"||r[2]===flt)&&r[9]>=450&&r[10]==="a").sort((a,b)=>b[15]-a[15]).slice(0,15);
  $("#ict").innerHTML=tb("ผู้เล่น",I,[[15,"ICT/90"],[16,"I"],[17,"C"],[18,"T"]],d=>d[2]+" ฟอร์ม "+d[5]+" · "+d[13]+" แต้ม/90")}
+let rankChartMode='ep';
+function renderRankChart(players,gw){
+ const host=document.getElementById('rankChart');
+ const detail=document.getElementById('rankChartDetail');
+ const modes=document.getElementById('rankChartModes');
+ const gwLabel=document.getElementById('rankChartGW');
+ if(!host||!modes)return;
+ const num=v=>v===null||v===undefined||v===''||!Number.isFinite(Number(v))?null:Number(v);
+ const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+ const color={GKP:'#8a6bd1',DEF:'#2a8bd6',MID:'#1f9d55',FWD:'#e08a1a'};
+ const mode=rankChartMode==='xgi'?'xgi':'ep';
+ const usable=players.map(p=>({...p,_chartX:num(p._fdr),_chartY:mode==='ep'?num(p._ep):num(p._xgi90)}))
+   .filter(p=>p._chartX!==null&&p._chartY!==null&&(mode!=='xgi'||p.position!=='GKP'));
+ modes.querySelectorAll('[data-rank-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.rankMode===mode)));
+ if(gwLabel)gwLabel.textContent='GW'+gw;
+ if(!usable.length){host.innerHTML='<p class="note">ไม่มีข้อมูลเพียงพอสำหรับกราฟมุมมองนี้ใน Gameweek ปัจจุบัน</p>';if(detail)detail.textContent='';return;}
+ const W=560,H=350,L=55,R=18,T=25,B=53,PW=W-L-R,PH=H-T-B;
+ const maxYRaw=Math.max(...usable.map(p=>p._chartY),mode==='ep'?1:.1);
+ const step=mode==='ep'?Math.max(1,Math.ceil(maxYRaw/5)):Math.max(.05,Math.ceil(maxYRaw/.25)*.05/5);
+ const maxY=mode==='ep'?Math.ceil(maxYRaw/step)*step:Math.ceil(maxYRaw/(step*5))*(step*5);
+ const x=v=>L+(v-1)/4*PW, y=v=>T+PH-(v/maxY)*PH;
+ const xTicks=[1,2,3,4,5],yTicks=Array.from({length:6},(_,i)=>maxY*i/5);
+ let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="กราฟผู้เล่น Top 30 เทียบความยากโปรแกรม FDR กับ ${mode==='ep'?'คะแนนคาดการณ์ FPL':'xGI ต่อ 90 นาที'}">`;
+ yTicks.forEach(v=>{const yy=y(v);svg+=`<line class="gridline" x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}"/><text class="tick" x="${L-9}" y="${yy+4}" text-anchor="end">${mode==='ep'?v.toFixed(1):v.toFixed(2)}</text>`});
+ xTicks.forEach(v=>{const xx=x(v);svg+=`<line class="gridline" x1="${xx}" x2="${xx}" y1="${T}" y2="${H-B}"/><text class="tick" x="${xx}" y="${H-B+19}" text-anchor="middle">${v}</text>`});
+ svg+=`<text class="axis-title" x="${L+PW/2}" y="${H-8}" text-anchor="middle">FDR · โปรแกรมง่าย ← ยาก</text>`;
+ svg+=`<text class="axis-title" transform="translate(14 ${T+PH/2}) rotate(-90)" text-anchor="middle">${mode==='ep'?'FPL Expected Points (EP_next)':'xGI / 90 นาที'}</text>`;
+ // Label only the five strongest Model Score points to keep the mobile chart readable.
+ const labelled=new Set([...usable].sort((a,b)=>(num(b._model)||0)-(num(a._model)||0)).slice(0,5).map(p=>String(p.id??(p.name+'|'+p.team))));
+ usable.forEach(p=>{
+   const key=String(p.id??(p.name+'|'+p.team)),cx=x(p._chartX),cy=y(p._chartY),r=4+Math.max(0,Math.min(100,num(p._model)||0))/25;
+   const title=`${p.name} · ${p.position} · EP ${num(p._ep)?.toFixed(1)??'—'} · xGI/90 ${num(p._xgi90)?.toFixed(2)??'—'} · FDR ${p._chartX.toFixed(1)}`;
+   svg+=`<circle class="player-dot" data-chart-player="${esc(key)}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="${color[p.position]||'#888'}" tabindex="0" role="button" aria-label="${esc(title)}"><title>${esc(title)}</title></circle>`;
+   if(labelled.has(key))svg+=`<text class="player-label" x="${(cx+8).toFixed(1)}" y="${(cy-8).toFixed(1)}">${esc(p.name)}</text>`;
+ });
+ svg+='</svg>';
+ host.innerHTML=svg;
+ const showPlayer=p=>{
+   if(!p||!detail)return;
+   const fdr=num(p._fdr),ep=num(p._ep),xgi=num(p._xgi90);
+   detail.innerHTML=`<b>${esc(p.name)}</b> · ${esc(p.team)} ${esc(p.position)} · £${num(p.price)?.toFixed(1)??'—'}m<br>FPL EP ${ep===null?'—':ep.toFixed(1)} · xGI/90 ${xgi===null?'—':xgi.toFixed(2)} · Form ${num(p.form)?.toFixed(1)??'—'} · FDR ${fdr===null?'—':fdr.toFixed(1)} · Model Score ${num(p._model)?.toFixed(1)??'—'}`;
+ };
+ host.querySelectorAll('[data-chart-player]').forEach(dot=>{
+   const activate=()=>{const key=dot.getAttribute('data-chart-player');const p=usable.find(q=>String(q.id??(q.name+'|'+q.team))===key);showPlayer(p)};
+   dot.addEventListener('click',activate);
+   dot.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate()}});
+ });
+ modes.querySelectorAll('[data-rank-mode]').forEach(btn=>btn.onclick=()=>{rankChartMode=btn.dataset.rankMode;renderRankChart(players,gw)});
+ if(detail)detail.textContent=mode==='ep'?'แตะจุดเพื่อดูชื่อผู้เล่นและตัวเลข · มุมซ้ายบนคือ EP สูงและโปรแกรมง่าย':'แตะจุดเพื่อดูชื่อผู้เล่นและตัวเลข · ไม่รวม GKP เพราะ xGI/90 ไม่ใช่ตัวชี้วัดของผู้รักษาประตู';
+}
+
 function renderCaptainAndRank(){
  const capPanel=$("#captainPanel"),rankPanel=$("#rankPanel");
  if(!capPanel||!rankPanel)return;
@@ -387,6 +452,7 @@ function renderCaptainAndRank(){
  const rankSub=$("#rankSub");
  if(rankSub)rankSub.textContent=`Top ${top30.length} สำหรับ GW${gw} · เลือกด้วย Model Score และแยกตามตำแหน่ง · อันดับบนการ์ดคืออันดับรวม ส่วน “อันดับในตำแหน่ง” คืออันดับภายในกลุ่ม`;
  rankPanel.innerHTML=top30.length?`<div class="position-summary">${posCounts.map(x=>`<span>${x}</span>`).join('')}</div>${groupHTML}`:'<p class="note">ยังไม่มีผู้เล่นที่ผ่านเกณฑ์ EP_next มากกว่า 0 และลงเล่นอย่างน้อย 90 นาที</p>';
+ renderRankChart(top30,gw);
 }
 function team(){let id="",own=[];
  try{id=localStorage.getItem("fpl_id")||"";own=JSON.parse(localStorage.getItem("fpl_own2")||"[]")}catch(e){}

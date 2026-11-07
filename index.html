@@ -82,6 +82,38 @@ textarea,.in{width:100%;font:inherit;padding:10px 12px;border-radius:10px;border
 @media(max-width:390px){.rank-chart .tick{font-size:10px}.rank-chart .player-label{font-size:9px}.rank-chart-heading{display:block}}
 @media(min-width:700px){nav{justify-content:center}nav a{min-width:88px}}
 
+
+/* 4 Gameweek planner */
+.planner-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:end}
+.planner-field{display:flex;flex-direction:column;gap:4px;font-size:.78rem;color:var(--mu)}
+.planner-field input{width:100%;min-width:0;padding:9px;border:1px solid var(--ln);border-radius:9px;background:var(--bg);color:var(--ink);font:inherit}
+.planner-action{font:inherit;font-weight:800;border:0;border-radius:10px;background:var(--ac);color:var(--bg);padding:10px 14px;cursor:pointer}
+.planner-mode button[aria-pressed=true],.planner-week button[aria-pressed=true]{background:var(--ac);color:var(--bg);border-color:var(--ac)}
+.planner-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:10px 0}
+.planner-gw-card{background:var(--sf);border:1px solid var(--ln);border-radius:11px;padding:9px 7px;min-width:0}
+.planner-gw-card strong{display:block;font-size:.8rem}.planner-gw-card b{display:block;font-size:1.05rem;color:var(--ac)}.planner-gw-card small{display:block;color:var(--mu);font-size:.69rem;overflow-wrap:anywhere}
+.planner-bar{height:7px;background:var(--bg);border-radius:99px;overflow:hidden;margin-top:6px}.planner-bar i{display:block;height:100%;background:var(--ac);border-radius:99px}
+.planner-lineup{border:1px solid var(--ln);background:var(--sf);border-radius:14px;padding:12px;margin:0 0 12px}
+.planner-lineup-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.planner-formation{font-weight:800;color:var(--ac)}
+.planner-pitch{background:linear-gradient(180deg,rgba(40,125,75,.10),rgba(40,125,75,.03));border:1px solid var(--ln);border-radius:12px;padding:10px;margin:10px 0}
+.planner-pitch-row{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:7px 0}
+.planner-player{display:inline-flex;flex-direction:column;align-items:center;gap:1px;min-width:67px;max-width:115px;border:1px solid var(--ln);background:var(--sf);border-radius:9px;padding:6px 7px;text-align:center;font-size:.72rem;overflow-wrap:anywhere}
+.planner-player b{font-size:.77rem}.planner-player small{color:var(--mu);font-size:.68rem}.planner-player.captain{border:2px solid var(--ac);background:var(--acs)}.planner-player.vice{border:2px dashed var(--ac)}
+.planner-pill{display:inline-block;font-size:.65rem;font-weight:800;border-radius:99px;padding:1px 6px;background:var(--ac);color:var(--bg)}
+.planner-bench{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.planner-bench-item{background:var(--bg);border-radius:9px;padding:8px;font-size:.78rem}.planner-bench-item small{display:block;color:var(--mu)}
+.planner-squad-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.planner-pos-group{border:1px solid var(--ln);border-radius:11px;padding:9px;background:var(--sf);min-width:0}
+.planner-pos-group h4{font-size:.82rem;margin:0 0 6px}
+.planner-squad-player{display:flex;justify-content:space-between;gap:5px;padding:5px 0;border-top:1px solid var(--ln);font-size:.75rem}
+.planner-squad-player small{display:block;color:var(--mu)}
+.planner-transfer{padding:9px 0;border-top:1px solid var(--ln);font-size:.82rem}
+.planner-status{padding:10px 12px;border-radius:10px;background:var(--acs);font-size:.83rem;margin:8px 0}
+.planner-status.warn{background:var(--wns)}
+.planner-muted{font-size:.76rem;color:var(--mu)}
+.planner-performance-row{display:grid;grid-template-columns:54px 1fr 1fr 1fr;gap:7px;align-items:center;padding:8px 0;border-top:1px solid var(--ln);font-size:.78rem}.planner-performance-row b{font-size:.82rem}.planner-delta-pos{color:var(--ac);font-weight:800}.planner-delta-neg{color:var(--wn);font-weight:800}
+@media(max-width:390px){.planner-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.planner-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.planner-player{min-width:58px}.planner-squad-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -160,6 +192,33 @@ textarea,.in{width:100%;font:inherit;padding:10px 12px;border-radius:10px;border
 <div id="allList" hidden></div>
 </section>
 
+
+<section id="planner">
+<h2>4 GW Team Planner</h2>
+<p class="sub" id="plannerIntro">สร้างทีม 15 คน วางตัวจริง สำรอง และกัปตันล่วงหน้า 4 Gameweeks ภายใต้งบประมาณและกฎ FPL</p>
+<div class="card">
+ <div class="chips planner-mode" id="plannerModes">
+  <button type="button" data-planner-mode="best" aria-pressed="true">ทีมแนะนำ (Best Squad)</button>
+  <button type="button" data-planner-mode="my" aria-pressed="false">ปรับทีมฉัน (My Team)</button>
+ </div>
+ <div class="planner-controls">
+  <label class="planner-field">งบทีม (£m)<input id="plannerBudget" type="number" min="80" max="120" step="0.1" value="100"></label>
+  <label class="planner-field" id="plannerBankWrap" hidden>เงินเหลือในธนาคาร (£m)<input id="plannerBank" type="number" min="0" max="30" step="0.1" value="0"></label>
+  <label class="planner-field" id="plannerFTWrap" hidden>Free Transfers<input id="plannerFT" type="number" min="0" max="5" step="1" value="1"></label>
+  <label class="planner-field" id="plannerHitsWrap" hidden>ยอมรับ Hit สูงสุด<input id="plannerHits" type="number" min="0" max="3" step="1" value="0"></label>
+  <button type="button" class="planner-action" id="plannerRun">จัดทีม 4 GW</button>
+ </div>
+ <p class="planner-muted" id="plannerModeNote">Best Squad จะสร้างทีม 15 คน งบไม่เกินที่กำหนด และไม่เกิน 3 คนต่อสโมสร</p>
+ <div id="plannerStatus" class="planner-status">กำลังรอข้อมูล FPL สด…</div>
+</div>
+<div id="plannerOutput">
+ <div class="card"><p class="note">เมื่อข้อมูล FPL โหลดเสร็จ ระบบจะแสดงทีมแนะนำและแผนทั้ง 4 Gameweeks ที่นี่</p></div>
+</div>
+<h2>Forecast Performance · วัดความแม่นยำ</h2>
+<div class="card" id="plannerPerformance"><p class="note">ระบบจะบันทึก Forecast ก่อน Deadline และเทียบกับคะแนนจริงเมื่อ Gameweek จบ</p></div>
+<div class="method-note">GW แรกใช้ Official FPL EP_next เมื่อมีค่า ส่วน GW ถัดไปเป็น Model Estimate จากคะแนน/90, xG/xA หรือ xGI/90, คลีนชีตสำหรับ GKP/DEF, นาทีเฉลี่ย และ FDR · ทีม 15 คนใช้กฎ 2 GKP, 5 DEF, 5 MID, 3 FWD, งบไม่เกิน £100m (แก้ไขได้), สูงสุด 3 คนต่อสโมสร · ตัวจริงต้องเป็น 1 GK และ 3–5 DEF, 2–5 MID, 1–3 FWD · คะแนนเป็นการประมาณ ไม่ใช่การรับประกัน</div>
+</section>
+
 <section id="team">
 <h2>ทีมของฉัน</h2>
 <div class="card">
@@ -186,6 +245,7 @@ textarea,.in{width:100%;font:inherit;padding:10px 12px;border-radius:10px;border
 <a href="#summary" data-t="summary">แนะนำ</a>
 <a href="#captain" data-t="captain">กัปตัน</a>
 <a href="#rank30" data-t="rank30">Top 30</a>
+<a href="#planner" data-t="planner">4 GW Plan</a>
 <a href="#compare" data-t="compare">สถิติ</a>
 <a href="#team" data-t="team">ทีมฉัน</a>
 </nav>
@@ -224,6 +284,8 @@ let HZ=4;
 let LIVE_FPL_PLAYERS=[];
 let LIVE_FPL_FIXTURES={};
 let LIVE_FPL_META=null;
+let LIVE_FPL_HISTORY={};
+let LIVE_FPL_EVENT_SCHEDULE=[];
 const chips=t=>(FX[t]||[]).slice(0,HZ).map(f=>'<span class="fx f'+f[2]+'">'+f[0]+'<sup>'+f[1]+'</sup></span>').join("");;
 const OV={"Bruno":{"pr":11.7,"pts":35,"form":1.0,"own":21.9,"ep":1.0,"gw9":2,"news":""},"Tavernier":{"pr":6.6,"pts":55,"form":6.0,"own":26.7,"ep":6.0,"gw9":3,"news":""},"Neto":{"pr":6.6,"pts":40,"form":6.5,"own":4.9,"ep":6.5,"gw9":3,"news":""},"Palmer":{"pr":9.8,"pts":45,"form":4.2,"own":27.8,"ep":4.2,"gw9":8,"news":""},"Haaland":{"pr":15.8,"pts":68,"form":7.2,"own":78.9,"ep":7.2,"gw9":2,"news":""},"Belloumi":{"pr":5.3,"pts":48,"form":4.2,"own":10.2,"ep":4.2,"gw9":5,"news":""},"De Cuyper":{"pr":5.4,"pts":69,"form":7.8,"own":44.5,"ep":7.8,"gw9":9,"news":""},"Vuskovic":{"pr":5.2,"pts":58,"form":6.5,"own":7.2,"ep":6.5,"gw9":6,"news":""},"Tarkowski":{"pr":6.2,"pts":48,"form":1.2,"own":18.9,"ep":1.2,"gw9":0,"news":""},"Bogle":{"pr":4.8,"pts":51,"form":2.2,"own":11.4,"ep":2.2,"gw9":1,"news":""},"Calafiori":{"pr":5.9,"pts":51,"form":5.5,"own":47.9,"ep":5.5,"gw9":6,"news":""},"Raya":{"pr":6.2,"pts":54,"form":6.0,"own":46.4,"ep":6.0,"gw9":5,"news":""},"Jackson":{"pr":7.0,"pts":43,"form":8.2,"own":24.9,"ep":8.2,"gw9":9,"news":""},"Manzambi":{"pr":6.1,"pts":38,"form":6.0,"own":6.7,"ep":6.0,"gw9":7,"news":""},"Evanilson":{"pr":6.4,"pts":52,"form":8.5,"own":16.7,"ep":8.5,"gw9":9,"news":""},"Rayan":{"pr":6.3,"pts":28,"form":4.5,"own":2.2,"ep":4.5,"gw9":3,"news":""},"Kudus":{"pr":6.5,"pts":26,"form":4.8,"own":1.6,"ep":4.8,"gw9":7,"news":""},"Silva":{"pr":5.0,"pts":37,"form":6.0,"own":2.2,"ep":6.0,"gw9":8,"news":""},"Thomas":{"pr":4.0,"pts":32,"form":2.0,"own":8.3,"ep":1.0,"gw9":0,"news":"Calf injury - 50% chance of playing"},"Rogers":{"pr":8.1,"pts":50,"form":5.2,"own":51.9,"ep":5.2,"gw9":9,"news":""}};
 ALL.forEach(p=>{const o=OV[p.s];if(o){const nw=o.news;delete o.news;Object.assign(p,o,{as:"FPL ทางการ ณ GW9 (ยังไม่จบ)"});if(nw)p.note+=" · ข่าว FPL: "+nw}});
@@ -454,6 +516,346 @@ function renderCaptainAndRank(){
  rankPanel.innerHTML=top30.length?`<div class="position-summary">${posCounts.map(x=>`<span>${x}</span>`).join('')}</div>${groupHTML}`:'<p class="note">ยังไม่มีผู้เล่นที่ผ่านเกณฑ์ EP_next มากกว่า 0 และลงเล่นอย่างน้อย 90 นาที</p>';
  renderRankChart(top30,gw);
 }
+
+// Four-gameweek squad, line-up and transfer planner.
+const PlannerState={mode:'best',weekIndex:0,result:null,lastMode:null};
+const PLANNER_POSITIONS=['GKP','DEF','MID','FWD'];
+const PLANNER_COUNTS={GKP:2,DEF:5,MID:5,FWD:3};
+const plannerNum=v=>{if(v===null||v===undefined||v==='')return null;const n=Number(v);return Number.isFinite(n)?n:null};
+const plannerClamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const plannerEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const plannerKey=p=>String(p.id??(p.name+'|'+p.team));
+const plannerFixture=(p,gw)=>((LIVE_FPL_FIXTURES[p.team]||[]).filter(f=>Number(f.event)===Number(gw)));
+function plannerFdr(p,gw){const fs=plannerFixture(p,gw);return fs.length?fs.reduce((a,f)=>a+(plannerNum(f.difficulty)??3),0)/fs.length:null}
+function plannerFutureProjection(p,weekIndex,gw){
+ const fs=plannerFixture(p,gw);
+ if(!fs.length)return {points:0,source:weekIndex===0?'Official EP':'Model',minutes:0,fdr:null,blank:true};
+ const mins=Math.max(0,plannerNum(p.minutes)||0),completed=Math.max(1,plannerNum(LIVE_FPL_META?.latest_finished_gameweek)||1);
+ const starts=plannerNum(p.starts);
+ const avgMinutes=mins/completed;
+ const startMinutes=starts!==null&&starts>0?90*(starts/completed):avgMinutes;
+ let expectedMinutes=plannerClamp(.7*avgMinutes+.3*startMinutes,0,90);
+ const chance=plannerNum(p.chance_of_playing_next_round);
+ let availability=1;
+ if(p.status==='d')availability=weekIndex===0?(chance===null?.5:plannerClamp(chance/100,0,1)):.7;
+ else if(p.status==='i')availability=weekIndex===0?0:.35;
+ else if(p.status==='s'||p.status==='u')availability=0;
+ else if(p.status!=='a')availability=0;
+ expectedMinutes*=availability;
+ const fdr=plannerFdr(p,gw);
+ if(weekIndex===0){
+   const official=plannerNum(p.expected_points);
+   if(official!==null){
+     // EP_next is the official FPL forecast. Only adjust doubtful/unavailable status; do not re-create it.
+     const statusFactor=p.status==='a'?1:availability;
+     return {points:Math.max(0,official*statusFactor),source:'FPL EP',minutes:expectedMinutes,fdr,blank:false};
+   }
+ }
+ const points90=plannerNum(p.points90)??(mins>0?(plannerNum(p.points)||0)*90/mins:0);
+ let attack90=0;
+ const xg90=plannerNum(p.xg90),xa90=plannerNum(p.xa90),xgi90=plannerNum(p.xgi90);
+ if(xg90!==null||xa90!==null){
+   const goalPts=p.position==='GKP'||p.position==='DEF'?6:p.position==='MID'?5:4;
+   attack90=(xg90??0)*goalPts+(xa90??0)*3;
+ }else if(xgi90!==null){
+   const blendedPts=p.position==='GKP'?0:p.position==='DEF'?4.8:p.position==='MID'?4.3:3.8;
+   attack90=xgi90*blendedPts;
+ }
+ let rate;
+ if(p.position==='GKP'){
+   const startsDen=Math.max(1,starts??completed);
+   const cs=plannerNum(p.clean_sheets);
+   const csPts=cs===null?0:plannerClamp(cs/startsDen,0,.8)*4;
+   rate=points90*.78+csPts*.22;
+ }else{
+   rate=points90*.68+attack90*.32;
+ }
+ // The small fixture adjustment is a transparent model assumption, not an official FPL coefficient.
+ const fixtureFactor=fdr===null?1:plannerClamp(1+(3-fdr)*.055,.78,1.22);
+ const projected=rate*(expectedMinutes/90)*fixtureFactor*fs.length;
+ return {points:Math.max(0,projected),source:'Model',minutes:expectedMinutes,fdr,blank:false};
+}
+function plannerPreparePlayers(){
+ const weeks=(Array.isArray(LIVE_FPL_META?.fixture_gameweeks)?LIVE_FPL_META.fixture_gameweeks:[]).slice(0,4);
+ const gwList=weeks.length?weeks:[Number(window.fplNextGameweek||LIVE_FPL_META?.current_gameweek||1)];
+ const players=LIVE_FPL_PLAYERS.map(p=>{
+   const projections=gwList.map((gw,i)=>plannerFutureProjection(p,i,gw));
+   const total=projections.reduce((s,x)=>s+x.points,0);
+   return {...p,_plannerKey:plannerKey(p),_plannerProjections:projections,_planner4:total};
+ });
+ return {players,gwList};
+}
+function plannerIsEligible(p){return ['a','d'].includes(p.status)&&plannerNum(p.price)!==null&&plannerNum(p.price)>0}
+function plannerPositionCounts(squad){const c={GKP:0,DEF:0,MID:0,FWD:0};squad.forEach(p=>{if(c[p.position]!==undefined)c[p.position]++});return c}
+function plannerTeamCounts(squad){const c={};squad.forEach(p=>c[p.team]=(c[p.team]||0)+1);return c}
+function plannerValidSquad(squad,budget){
+ if(squad.length!==15)return false;
+ const c=plannerPositionCounts(squad),tc=plannerTeamCounts(squad);
+ return PLANNER_POSITIONS.every(pos=>c[pos]===PLANNER_COUNTS[pos])&&Object.values(tc).every(n=>n<=3)&&squad.reduce((s,p)=>s+(plannerNum(p.price)||0),0)<=budget+1e-6;
+}
+function plannerChooseXI(squad,weekIndex){
+ const value=p=>p._plannerProjections[weekIndex]?.points||0;
+ const byPos={};PLANNER_POSITIONS.forEach(pos=>byPos[pos]=squad.filter(p=>p.position===pos).sort((a,b)=>value(b)-value(a)));
+ if(!byPos.GKP.length)return null;
+ const gk=byPos.GKP[0],defs=byPos.DEF,mids=byPos.MID,fwds=byPos.FWD;
+ let best=null;
+ for(let d=3;d<=5;d++)for(let m=2;m<=5;m++)for(let f=1;f<=3;f++){
+   if(d+m+f!==10||defs.length<d||mids.length<m||fwds.length<f)continue;
+   const starting=[gk,...defs.slice(0,d),...mids.slice(0,m),...fwds.slice(0,f)];
+   const ordered=[...starting].sort((a,b)=>value(b)-value(a));
+   const captain=ordered[0],vice=ordered[1];
+   const base=starting.reduce((s,p)=>s+value(p),0),captainBonus=value(captain);
+   const score=base+captainBonus;
+   if(!best||score>best.score)best={formation:`${d}-${m}-${f}`,starting,captain,vice,base,captainBonus,score};
+ }
+ if(!best)return null;
+ const starterKeys=new Set(best.starting.map(plannerKey));
+ const remaining=squad.filter(p=>!starterKeys.has(plannerKey(p)));
+ const benchGK=remaining.find(p=>p.position==='GKP');
+ const benchOut=remaining.filter(p=>p.position!=='GKP').sort((a,b)=>value(b)-value(a));
+ best.bench=[...benchOut, ...(benchGK?[benchGK]:[])];
+ best.benchValue=best.bench.reduce((s,p)=>s+value(p),0);
+ best.value=value;
+ return best;
+}
+function plannerSquadUtility(squad,weekCount){
+ let total=0;const lineups=[];
+ for(let i=0;i<weekCount;i++){
+   const l=plannerChooseXI(squad,i);if(!l)return -Infinity;
+   total+=l.score+l.benchValue*.08;lineups.push(l);
+ }
+ return {total,lineups};
+}
+function plannerShortlist(players){
+ const out={};
+ PLANNER_POSITIONS.forEach(pos=>{
+   const pool=players.filter(p=>p.position===pos&&plannerIsEligible(p));
+   const byScore=[...pool].sort((a,b)=>b._planner4-a._planner4).slice(0,55);
+   const cheap=[...pool].sort((a,b)=>a.price-b.price||b._planner4-a._planner4).slice(0,18);
+   const map=new Map([...byScore,...cheap].map(p=>[p._plannerKey,p]));out[pos]=[...map.values()];
+ });
+ return out;
+}
+function plannerCheapestStart(players,budget){
+ const pool=plannerShortlist(players),squad=[];
+ const order=['GKP','DEF','MID','FWD'];
+ for(const pos of order){
+   const candidates=[...pool[pos]].sort((a,b)=>a.price-b.price||b._planner4-a._planner4);
+   for(let n=0;n<PLANNER_COUNTS[pos];n++){
+     const p=candidates.find(q=>!squad.some(x=>x._plannerKey===q._plannerKey)&&(plannerTeamCounts(squad)[q.team]||0)<3&&squad.reduce((s,x)=>s+x.price,0)+q.price<=budget+1e-6);
+     if(!p)return null;squad.push(p);
+   }
+ }
+ return squad;
+}
+function plannerOptimizeBest(players,budget,weekCount){
+ let squad=plannerCheapestStart(players,budget);if(!squad)return null;
+ let utility=plannerSquadUtility(squad,weekCount).total;
+ const pool=plannerShortlist(players);
+ for(let iter=0;iter<32;iter++){
+   let best=null;
+   for(let i=0;i<squad.length;i++){
+     const outgoing=squad[i];
+     for(const incoming of pool[outgoing.position]||[]){
+       if(incoming._plannerKey===outgoing._plannerKey||squad.some((p,j)=>j!==i&&p._plannerKey===incoming._plannerKey))continue;
+       const spend=squad.reduce((s,p)=>s+p.price,0)-outgoing.price+incoming.price;
+       if(spend>budget+1e-6)continue;
+       const trial=[...squad];trial[i]=incoming;
+       const tc=plannerTeamCounts(trial);if(Object.values(tc).some(n=>n>3))continue;
+       const candidateUtility=plannerSquadUtility(trial,weekCount).total;
+       const gain=candidateUtility-utility;
+       const extraCost=incoming.price-outgoing.price;
+       const ratio=gain/(Math.max(.15,extraCost+.15));
+       if(gain>.025&&(!best||ratio>best.ratio))best={trial,utility:candidateUtility,gain,ratio};
+     }
+   }
+   if(!best)break;
+   squad=best.trial;utility=best.utility;
+ }
+ return plannerValidSquad(squad,budget)?squad:null;
+}
+function plannerResolveMySquad(players){
+ let keys=[];try{keys=JSON.parse(localStorage.getItem('fpl_own2')||'[]')}catch(e){}
+ if(!Array.isArray(keys))keys=[];
+ const map=new Map(players.map(p=>[`${p.name}|${p.team}`,p]));
+ const selected=keys.map(k=>map.get(String(k))).filter(Boolean);
+ const unique=[...new Map(selected.map(p=>[p._plannerKey,p])).values()];
+ return {squad:unique,stored:keys.length,missing:keys.length-unique.length};
+}
+function plannerOptimizeTransfers(startSquad,players,weekCount,bank,freeTransfers,maxHits,hitCost){
+ let squad=[...startSquad],cash=bank;const suggestions=[];let util=plannerSquadUtility(squad,weekCount).total;
+ const pool=plannerShortlist(players);
+ const maxMoves=freeTransfers+maxHits;
+ for(let step=0;step<maxMoves;step++){
+   let best=null;
+   for(let i=0;i<squad.length;i++){
+     const outgoing=squad[i];
+     for(const incoming of pool[outgoing.position]||[]){
+       if(squad.some((p,j)=>j!==i&&p._plannerKey===incoming._plannerKey))continue;
+       const newCash=cash+outgoing.price-incoming.price;
+       if(newCash<-.001)continue;
+       const trial=[...squad];trial[i]=incoming;
+       if(Object.values(plannerTeamCounts(trial)).some(n=>n>3))continue;
+       const after=plannerSquadUtility(trial,weekCount).total;
+       const gross=after-util,hit=step>=freeTransfers?hitCost:0,net=gross-hit;
+       if(net>.05){
+         const ratio=net/(Math.max(.2,incoming.price-outgoing.price+.2));
+         if(!best||ratio>best.ratio)best={trial,incoming,outgoing,newCash,after,gross,hit,net,ratio};
+       }
+     }
+   }
+   if(!best)break;
+   suggestions.push(best);squad=best.trial;cash=best.newCash;util=best.after;
+ }
+ return {squad,suggestions,bankLeft:cash,utility:util};
+}
+function plannerFixtureLabel(p,gw){
+ const fs=plannerFixture(p,gw);if(!fs.length)return 'Blank / ไม่มีโปรแกรม';
+ return fs.map(f=>`${f.opponent||'คู่แข่ง'} (${f.side==='H'?'เหย้า':'เยือน'}) · FDR ${plannerNum(f.difficulty)??'—'}`).join(' + ');
+}
+function plannerMoney(n){return `£${(Number(n)||0).toFixed(1)}m`}
+function plannerStatus(message,warn=false){const el=$('#plannerStatus');if(el){el.textContent=message;el.classList.toggle('warn',!!warn)}}
+function plannerBuildBest(){
+ const budget=plannerNum($('#plannerBudget')?.value)??100;
+ const prepared=plannerPreparePlayers();
+ const eligible=prepared.players.filter(plannerIsEligible);
+ const squad=plannerOptimizeBest(eligible,budget,prepared.gwList.length);
+ if(!squad){plannerStatus('ยังสร้างทีม 15 คนภายใต้งบนี้ไม่ได้ ลองเพิ่มงบหรือรอข้อมูลผู้เล่นที่พร้อมลงสนาม',true);return null}
+ const util=plannerSquadUtility(squad,prepared.gwList.length);
+ return {mode:'best',squad,lineups:util.lineups,gwList:prepared.gwList,total:util.total,transfers:[],bankLeft:null,budget};
+}
+function plannerBuildMy(){
+ const prepared=plannerPreparePlayers();const resolved=plannerResolveMySquad(prepared.players);
+ if(resolved.stored!==15||resolved.squad.length!==15){
+   plannerStatus(`โหมด My Team ต้องมีผู้เล่นครบ 15 คนในเมนู “ทีมฉัน” ตอนนี้บันทึก ${resolved.stored} คน และจับคู่กับข้อมูลสดได้ ${resolved.squad.length} คน · เข้าเมนูทีมฉันแล้ววางรายชื่อทั้ง 15 คนก่อน`,true);
+   return null;
+ }
+ if(!plannerValidSquad(resolved.squad,1000)){
+   plannerStatus('รายชื่อทีมที่บันทึกไว้ไม่ตรงกฎ 2 GKP / 5 DEF / 5 MID / 3 FWD หรือมีเกิน 3 คนจากสโมสรเดียว กรุณาตรวจในเมนูทีมฉัน',true);return null;
+ }
+ const bank=plannerClamp(plannerNum($('#plannerBank')?.value)??0,0,30);
+ const ft=Math.round(plannerClamp(plannerNum($('#plannerFT')?.value)??1,0,5));
+ const hits=Math.round(plannerClamp(plannerNum($('#plannerHits')?.value)??0,0,3));
+ const hitCost=4;
+ const transferResult=plannerOptimizeTransfers(resolved.squad,prepared.players,prepared.gwList.length,bank,ft,hits,hitCost);
+ const squad=transferResult.squad;const util=plannerSquadUtility(squad,prepared.gwList.length);
+ return {mode:'my',originalSquad:resolved.squad,squad,lineups:util.lineups,gwList:prepared.gwList,total:util.total,transfers:transferResult.suggestions,bankLeft:transferResult.bankLeft,budget:null,freeTransfers:ft,maxHits:hits};
+}
+function plannerRenderOutput(result){
+ const host=$('#plannerOutput');if(!host)return;
+ if(!result){host.innerHTML='<div class="card"><p class="note">ยังไม่มีแผนที่พร้อมแสดง</p></div>';return}
+ const gwList=result.gwList,selected=Math.min(PlannerState.weekIndex,gwList.length-1),lineup=result.lineups[selected];
+ const maxPts=Math.max(1,...result.lineups.map(l=>l.score));
+ const summary=result.lineups.map((l,i)=>{
+   const captain=plannerEsc(l.captain?.name||'—'),gw=gwList[i];
+   return `<div class="planner-gw-card"><strong>GW${gw}</strong><b>${l.score.toFixed(1)}</b><small>${l.formation} · C: ${captain}</small><div class="planner-bar"><i style="width:${(l.score/maxPts*100).toFixed(1)}%"></i></div><small>${i===0?'EP_next / model fallback':'Model estimate'}</small></div>`;
+ }).join('');
+ const tabs=gwList.map((gw,i)=>`<button type="button" data-planner-week="${i}" aria-pressed="${i===selected}">GW${gw}</button>`).join('');
+ const roleRows=['GKP','DEF','MID','FWD'].map(pos=>{
+   const list=lineup.starting.filter(p=>p.position===pos);
+   if(!list.length)return '';
+   const players=list.map(p=>{
+     const isC=p===lineup.captain,isV=p===lineup.vice;
+     return `<div class="planner-player ${isC?'captain':''} ${isV?'vice':''}">${isC?'<span class="planner-pill">C</span>':isV?'<span class="planner-pill">VC</span>':''}<b>${plannerEsc(p.name)}</b><small>${plannerEsc(p.team)} · ${plannerMoney(p.price)}</small><small>${(p._plannerProjections[selected]?.points||0).toFixed(1)} pts</small></div>`;
+   }).join('');
+   return `<div class="planner-pitch-row" aria-label="${pos}">${players}</div>`;
+ }).join('');
+ const bench=lineup.bench.map((p,i)=>`<div class="planner-bench-item"><b>${i===3?'GK สำรอง':`สำรอง ${i+1}`} · ${plannerEsc(p.name)}</b><small>${plannerEsc(p.position)} · ${plannerEsc(p.team)} · ${(p._plannerProjections[selected]?.points||0).toFixed(1)} แต้ม · ${plannerFixtureLabel(p,gwList[selected])}</small></div>`).join('');
+ const positionCounts=plannerPositionCounts(result.squad);
+ const squadGroups=PLANNER_POSITIONS.map(pos=>{
+   const players=result.squad.filter(p=>p.position===pos).sort((a,b)=>b._planner4-a._planner4);
+   return `<div class="planner-pos-group"><h4>${pos} · ${players.length}</h4>${players.map(p=>`<div class="planner-squad-player"><span>${plannerEsc(p.name)}<small>${plannerEsc(p.team)} · ${(p._plannerProjections.reduce((s,x)=>s+x.points,0)).toFixed(1)} pts / horizon</small></span><b>${plannerMoney(p.price)}</b></div>`).join('')}</div>`;
+ }).join('');
+ const transfers=result.transfers.length?`<div class="card"><b>Transfer suggestions · 4 GW impact</b>${result.transfers.map((t,i)=>`<div class="planner-transfer"><b>${i+1}. ${plannerEsc(t.outgoing.name)} → ${plannerEsc(t.incoming.name)}</b><div class="planner-muted">${t.hit?'Hit -'+t.hit+' pts':'Free Transfer'} · คาดว่าเพิ่ม ${t.gross.toFixed(1)} แต้มก่อน Hit · สุทธิ ${t.net.toFixed(1)} แต้ม · เงินคงเหลือ ${plannerMoney(t.newCash)}</div></div>`).join('')}<p class="planner-muted">ใช้ราคาปัจจุบันประมาณการเงินส่วนต่าง ราคาขายจริงอาจต่างจากราคาปัจจุบัน และคำแนะนำนี้ไม่ส่งคำสั่งไปยังบัญชี FPL</p></div>`:`<div class="card"><b>Transfer suggestions</b><p class="note">ไม่พบการเปลี่ยนตัวที่เพิ่มคะแนนคาดการณ์สุทธิใน 4 GW ภายใต้เงินและจำนวน Hit ที่กำหนด · เงินคงเหลือ ${plannerMoney(result.bankLeft??0)}</p></div>`;
+ const transferBox=result.mode==='my'?transfers:'';
+ host.innerHTML=`<div class="card"><b>Projected points · ${gwList.length} Gameweeks</b><div class="planner-summary">${summary}</div><p class="planner-muted">คะแนนรวมแสดง 11 ตัวจริง + โบนัสกัปตัน (เพิ่มคะแนนกัปตันอีก 1 เท่า) ไม่รวมแต้มสำรอง เว้นแต่มีการเปลี่ยนอัตโนมัติระหว่างแข่ง</p></div>
+ <div class="chips planner-week" id="plannerWeekTabs">${tabs}</div>
+ <div class="planner-lineup"><div class="planner-lineup-head"><div><b>Starting XI · GW${gwList[selected]}</b><div class="planner-muted">Formation ${lineup.formation} · C ${plannerEsc(lineup.captain.name)} · VC ${plannerEsc(lineup.vice.name)}</div></div><div class="planner-formation">${lineup.score.toFixed(1)} pts</div></div><div class="planner-pitch">${roleRows}</div><b>Bench order</b><div class="planner-bench">${bench}</div></div>
+ ${transferBox}
+ <div class="card"><div class="row"><b>Squad · 15 players</b><b>${plannerMoney(result.squad.reduce((s,p)=>s+p.price,0))} / £${result.mode==='best'?Number(result.budget).toFixed(1):'—'}m</b></div><div class="position-summary">${PLANNER_POSITIONS.map(pos=>`<span>${pos} ${positionCounts[pos]}</span>`).join('')}</div><div class="planner-squad-grid">${squadGroups}</div><div class="eid"><button type="button" id="plannerSaveMyTeam">บันทึก 15 คนนี้ไปเมนูทีมฉัน</button></div><p class="planner-muted">การบันทึกจะเขียนทับรายชื่อที่เลือกไว้ในเมนูทีมฉันบนอุปกรณ์นี้เท่านั้น ไม่ได้เปลี่ยนทีมจริงในบัญชี FPL</p></div>`;
+}
+function plannerReadForecasts(){
+ try{const v=JSON.parse(localStorage.getItem('fpl_planner_forecasts_v1')||'[]');return Array.isArray(v)?v:[]}catch(e){return []}
+}
+function plannerSaveForecast(result){
+ if(!result?.lineups?.length)return;
+ const now=Date.now(),schedule=new Map((LIVE_FPL_EVENT_SCHEDULE||[]).map(e=>[Number(e.id),e]));
+ let saved=plannerReadForecasts(),changed=false;
+ result.lineups.forEach((lineup,i)=>{
+   const gw=Number(result.gwList[i]),event=schedule.get(gw);
+   if(!event||event.finished||!event.deadline_time)return;
+   const deadline=Date.parse(event.deadline_time);
+   // Never save a forecast after the deadline: that would contaminate the accuracy record.
+   if(!Number.isFinite(deadline)||now>=deadline)return;
+   const snapshot={
+     gw,mode:result.mode,expected_points:Number(lineup.score.toFixed(2)),formation:lineup.formation,
+     starting_ids:lineup.starting.map(p=>String(p.id)),captain_id:String(lineup.captain.id),vice_id:String(lineup.vice.id),
+     saved_at:new Date(now).toISOString(),deadline_time:event.deadline_time
+   };
+   const key=`${snapshot.mode}|${snapshot.gw}`;
+   const index=saved.findIndex(x=>`${x.mode}|${x.gw}`===key);
+   if(index>=0)saved[index]=snapshot;else saved.push(snapshot);
+   changed=true;
+ });
+ if(changed){
+   saved.sort((a,b)=>Number(a.gw)-Number(b.gw)||String(a.mode).localeCompare(String(b.mode)));
+   saved=saved.slice(-12);
+   try{localStorage.setItem('fpl_planner_forecasts_v1',JSON.stringify(saved))}catch(e){}
+ }
+ plannerRenderPerformance();
+}
+function plannerRenderPerformance(){
+ const host=$('#plannerPerformance');if(!host)return;
+ const forecasts=plannerReadForecasts();
+ if(!forecasts.length){host.innerHTML='<p class="note">ยังไม่มี Forecast ที่บันทึกก่อน Deadline · เปิด Planner และสร้างทีมก่อนเริ่ม Gameweek เพื่อเริ่มเก็บประวัติ</p>';return}
+ const rows=forecasts.slice().sort((a,b)=>Number(b.gw)-Number(a.gw)||String(a.mode).localeCompare(String(b.mode))).map(f=>{
+   const history=LIVE_FPL_HISTORY?.[String(f.gw)];
+   if(!history)return `<div class="planner-performance-row"><b>GW${f.gw}</b><span>${f.mode==='my'?'My Team':'Best Squad'}</span><span>คาด ${Number(f.expected_points).toFixed(1)}</span><span class="planner-muted">รอผล / ไม่อยู่ในประวัติ 4 GW ล่าสุด</span></div>`;
+   const actualFor=id=>history[String(id)]||null;
+   const playerResults=f.starting_ids.map(id=>actualFor(id));
+   if(playerResults.some(x=>!x))return `<div class="planner-performance-row"><b>GW${f.gw}</b><span>${f.mode==='my'?'My Team':'Best Squad'}</span><span>คาด ${Number(f.expected_points).toFixed(1)}</span><span class="planner-muted">ข้อมูลจริงไม่ครบ</span></div>`;
+   const base=playerResults.reduce((sum,x)=>sum+(Number(x.points)||0),0);
+   const c=actualFor(f.captain_id),v=actualFor(f.vice_id);
+   const bonus=(c&&Number(c.minutes)>0)?Number(c.points||0):((v&&Number(v.minutes)>0)?Number(v.points||0):0);
+   const actual=base+bonus,delta=actual-Number(f.expected_points||0);
+   const cls=delta>=0?'planner-delta-pos':'planner-delta-neg';
+   return `<div class="planner-performance-row"><b>GW${f.gw}</b><span>${f.mode==='my'?'My Team':'Best Squad'}<small class="planner-muted"> · ${plannerEsc(f.formation)}</small></span><span>คาด ${Number(f.expected_points).toFixed(1)}<small class="planner-muted">จริง ${actual.toFixed(1)}</small></span><span class="${cls}">${delta>=0?'+':''}${delta.toFixed(1)} แต้ม</span></div>`;
+ }).join('');
+ host.innerHTML=`<div class="planner-performance-row" style="border-top:0;color:var(--mu);font-weight:700"><span>GW</span><span>โหมด / Formation</span><span>คาด / จริง</span><span>ส่วนต่าง</span></div>${rows}<p class="planner-muted">คะแนนจริงคำนวณจาก 11 ตัวจริง + คะแนนกัปตันเพิ่มอีก 1 เท่า (ถ้ากัปตันไม่ได้ลง ใช้ Vice-Captain) · ยังไม่รวมการเปลี่ยนตัวอัตโนมัติจาก Bench, ชิป หรือการหัก Hit · API เก็บประวัติย้อนหลัง 4 GW ล่าสุดเท่านั้น</p>`;
+}
+
+function renderPlanner(autoBuild=false){
+ const host=$('#plannerOutput');if(!host)return;
+ const live=Array.isArray(LIVE_FPL_PLAYERS)&&LIVE_FPL_PLAYERS.length>100;
+ if(!live){plannerStatus('ต้องโหลด data.json สำเร็จก่อนจึงจะสร้างแผน 4 GW ได้',true);return}
+ const bestMode=PlannerState.mode==='best';
+ $('#plannerModes')?.querySelectorAll('[data-planner-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.plannerMode===PlannerState.mode)));
+ $('#plannerBankWrap').hidden=bestMode;$('#plannerFTWrap').hidden=bestMode;$('#plannerHitsWrap').hidden=bestMode;
+ $('#plannerRun').textContent=bestMode?'สร้างทีมแนะนำ 15 คน':'Optimize ทีมและ Transfers';
+ $('#plannerModeNote').textContent=bestMode?'Best Squad: เลือก 2 GKP, 5 DEF, 5 MID, 3 FWD ภายใต้งบที่กำหนดและจำกัดไม่เกิน 3 คนต่อสโมสร':'My Team: ใช้รายชื่อ 15 คนที่บันทึกไว้ในเมนูทีมฉัน · Entry ID อย่างเดียวไม่ได้ดึงรายชื่อทีมอัตโนมัติในเวอร์ชันนี้';
+ if(autoBuild||!PlannerState.result||PlannerState.lastMode!==PlannerState.mode){
+   PlannerState.weekIndex=0;PlannerState.result=bestMode?plannerBuildBest():plannerBuildMy();PlannerState.lastMode=PlannerState.mode;
+   if(PlannerState.result){
+     plannerStatus(bestMode?'สร้างทีม 15 คนผ่านกฎ FPL และวางแผนครบ '+PlannerState.result.gwList.length+' Gameweeks แล้ว':'อ่านทีมที่บันทึกไว้และคำนวณตัวจริง/สำรอง/Transfers ครบแล้ว');
+     plannerSaveForecast(PlannerState.result);
+   }
+   plannerRenderOutput(PlannerState.result);
+ }
+}
+document.addEventListener('click',e=>{
+ const mode=e.target.closest('[data-planner-mode]');
+ if(mode){PlannerState.mode=mode.dataset.plannerMode;PlannerState.result=null;renderPlanner(true);return;}
+ const week=e.target.closest('[data-planner-week]');
+ if(week){PlannerState.weekIndex=Number(week.dataset.plannerWeek)||0;plannerRenderOutput(PlannerState.result);return;}
+ if(e.target.closest('#plannerRun')){PlannerState.result=PlannerState.mode==='best'?plannerBuildBest():plannerBuildMy();PlannerState.lastMode=PlannerState.mode;PlannerState.weekIndex=0;if(PlannerState.result){plannerStatus('คำนวณแผนใหม่เรียบร้อย');plannerSaveForecast(PlannerState.result)}plannerRenderOutput(PlannerState.result);return;}
+ if(e.target.closest('#plannerSaveMyTeam')){
+   if(PlannerState.result?.squad?.length===15){
+     if(window.setMyTeamFromPlanner){window.setMyTeamFromPlanner(PlannerState.result.squad);plannerStatus('บันทึก 15 คนในเมนูทีมฉันบนอุปกรณ์นี้แล้ว');}
+     else plannerStatus('ยังไม่สามารถเชื่อมเมนูทีมฉันได้ กรุณารีโหลดหน้าเว็บแล้วลองใหม่',true);
+   }
+ }
+});
+
 function team(){let id="",own=[];
  try{id=localStorage.getItem("fpl_id")||"";own=JSON.parse(localStorage.getItem("fpl_own2")||"[]")}catch(e){}
  const sv=()=>{try{localStorage.setItem("fpl_id",id);localStorage.setItem("fpl_own2",JSON.stringify(own))}catch(e){}},nz=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(),K=r=>r[0]+"|"+r[1],inp=$("#eid");inp.value=id;
@@ -469,13 +871,13 @@ function team(){let id="",own=[];
  $("#pasteGo").onclick=()=>{const miss=[];$("#paste").value.split(/[,\n;|\t]+/).map(t=>t.replace(/\(.*?\)/g,"").replace(/£?\d+(\.\d+)?m?/g,"").trim()).filter(t=>t.length>2&&!/^(GKP|DEF|MID|FWD|GK|[A-Z]{3})$/.test(t)).forEach(t=>{const m=R.find(r=>nz(r[0])===nz(t))||find(t)[0];m?add(m):miss.push(t)});$("#res").innerHTML=miss.length?'<p class="note">หาไม่เจอ: '+miss.join(", ")+'</p>':"";$("#paste").value=""};
  $("#clr").onclick=()=>{own=[];sv();render()};
  document.addEventListener("click",e=>{const a=e.target.closest("[data-a]"),o=e.target.closest("[data-o]");if(a){const r=R.find(r=>K(r)===a.dataset.a);if(r){add(r);$("#res").innerHTML="";$("#q").value=""}}if(o){own=own.filter(k=>k!==o.dataset.o);sv();render()}});
- window.RT=render;show();render()}
+ window.RT=render;window.setMyTeamFromPlanner=players=>{own=players.map(r=>K([r.name,r.team]));sv();render()};show();render()}
 function hzUI(){document.querySelectorAll("[data-hz]").forEach(c=>{c.innerHTML='<label>มองไปข้างหน้า <b class="hzl"></b></label><input type="range" class="hz" min="1" max="4" step="1" value="'+HZ+'" aria-label="จำนวนสัปดาห์ที่มองไปข้างหน้า">'});hzL()}
 function hzL(){const first=window.fplNextGameweek||"ถัดไป";const last=typeof first==="number"?first+HZ-1:first;const t=HZ+" สัปดาห์ (GW"+first+(HZ>1?"–"+last:"")+")";document.querySelectorAll(".hzl").forEach(e=>e.textContent=t);document.querySelectorAll("input.hz").forEach(e=>e.value=HZ)}
 document.addEventListener("input",e=>{if(e.target.matches("input.hz")){HZ=+e.target.value;setAV();hzL();fix();sug();stats();window.RT&&window.RT()}});
 hzUI();draw();team();sug();
 document.addEventListener("click",e=>{const b=e.target.closest("button.pl");if(!b)return;const c=b.parentElement;c.classList.toggle("open");b.setAttribute("aria-expanded",c.classList.contains("open"))});
-function route(){const t=["summary","overview","fixtures","captain","rank30","compare","team"].includes(location.hash.slice(1))?location.hash.slice(1):"overview";
+function route(){const t=["summary","overview","fixtures","captain","rank30","planner","compare","team"].includes(location.hash.slice(1))?location.hash.slice(1):"overview";
  document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===t));
  document.querySelectorAll("nav a").forEach(a=>a.toggleAttribute("aria-current",a.dataset.t===t)&&a.setAttribute("aria-current","page"));
  document.querySelectorAll("nav a").forEach(a=>{if(a.dataset.t!==t)a.removeAttribute("aria-current")});scrollTo(0,0)}
@@ -508,6 +910,8 @@ addEventListener("hashchange",route);route();
     LIVE_FPL_PLAYERS=livePlayers;
     LIVE_FPL_FIXTURES=data.fixtures;
     LIVE_FPL_META=data.meta;
+    LIVE_FPL_HISTORY=data.event_points_history&&typeof data.event_points_history==='object'?data.event_points_history:{};
+    LIVE_FPL_EVENT_SCHEDULE=Array.isArray(data.meta.event_schedule)?data.meta.event_schedule:[];
 
     // Keep every player in R for search/team management. Do NOT filter to minutes>0 here.
     const liveR=livePlayers.map(p=>{
@@ -580,6 +984,8 @@ addEventListener("hashchange",route);route();
     sug();
     if(window.RT)window.RT();
     renderCaptainAndRank();
+    renderPlanner(true);
+    plannerRenderPerformance();
     hzL();
     if(window.refreshTeamEntryLink)window.refreshTeamEntryLink();
     if(metaEl)metaEl.textContent="ข้อมูลสดจาก Official FPL API · "+livePlayers.length+" ผู้เล่น · "+latestGW+" · มีนาทีลงสนาม "+playedCount+" คน · อัปเดต "+stamp+" (เวลาไทย)";
@@ -587,6 +993,8 @@ addEventListener("hashchange",route);route();
     console.error("Unable to load official FPL data.json; embedded backup remains active:",err);
     if(metaEl)metaEl.textContent="ใช้ข้อมูลสำรองชั่วคราว · "+String(err.message||err);
     renderCaptainAndRank();
+    plannerStatus("ใช้ข้อมูลสำรองอยู่ จึงยังไม่สามารถจัดทีม 4 GW จากข้อมูลสดได้",true);
+    plannerRenderPerformance();
   }
 })();
 </script>

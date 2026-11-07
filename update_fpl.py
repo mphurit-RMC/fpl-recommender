@@ -83,17 +83,30 @@ def main() -> None:
     latest_finished = max(finished, key=lambda e: e.get("id", 0), default=None)
     latest_gw = latest_finished.get("id") if latest_finished else None
 
-    # Latest event points are a supplementary field; season points remain total_points.
-    live_points = {}
-    if latest_gw:
+    # Keep a short rolling history of completed GWs for forecast-performance tracking.
+    # This is supplementary: a failed history request must not block the main player refresh.
+    event_points_history = {}
+    for event in finished[-4:]:
+        event_id = event.get("id")
+        if not event_id:
+            continue
         try:
-            live = get_json(f"/event/{latest_gw}/live/")
-            live_points = {
-                item.get("id"): number((item.get("stats") or {}).get("total_points"))
-                for item in live.get("elements", [])
+            live = get_json(f"/event/{event_id}/live/")
+            event_points_history[str(event_id)] = {
+                str(item.get("id")): {
+                    "points": int(number((item.get("stats") or {}).get("total_points"))),
+                    "minutes": int(number((item.get("stats") or {}).get("minutes"))),
+                }
+                for item in live.get("elements", []) if item.get("id") is not None
             }
-        except Exception as exc:  # keep the main refresh if this optional endpoint fails
-            print(f"Warning: could not fetch GW{latest_gw} live points: {exc}", file=sys.stderr)
+        except Exception as exc:
+            print(f"Warning: could not fetch GW{event_id} history: {exc}", file=sys.stderr)
+
+    latest_history = event_points_history.get(str(latest_gw), {}) if latest_gw else {}
+    live_points = {
+        int(player_id): values.get("points", 0)
+        for player_id, values in latest_history.items()
+    }
 
     players = []
     for p in elements:
@@ -188,6 +201,10 @@ def main() -> None:
         f.get("event") for f in fixture_rows
         if f.get("event") is not None and f.get("event") >= first_gw and not f.get("finished")
     })[:4]
+    event_schedule = [{
+        "id": e.get("id"), "deadline_time": e.get("deadline_time"),
+        "finished": bool(e.get("finished")), "is_current": bool(e.get("is_current")),
+    } for e in events if e.get("id") in upcoming]
     fixture_map = {t.get("short_name"): [] for t in team_rows if t.get("short_name")}
     for f in fixture_rows:
         if f.get("event") not in upcoming or f.get("finished"):
@@ -219,11 +236,13 @@ def main() -> None:
             "played_player_count": played_count,
             "total_season_points": total_season_points,
             "fixture_gameweeks": upcoming,
+            "event_schedule": event_schedule,
             "source": "Official Fantasy Premier League API",
             "defcon_available": any(p["dc90"] is not None for p in players),
         },
         "players": players,
         "fixtures": fixture_map,
+        "event_points_history": event_points_history,
         "teams": [{
             "id": t["id"], "name": t.get("name"), "short_name": t.get("short_name"),
             "strength_attack_home": t.get("strength_attack_home"),
@@ -240,7 +259,7 @@ def main() -> None:
     print(
         f"Updated {OUT.name}: {len(players)} players; {played_count} with minutes; "
         f"{total_season_points} total season points; GW{latest_gw} last finished; "
-        f"upcoming {upcoming}"
+        f"upcoming {upcoming}; performance history {list(event_points_history.keys())}"
     )
 
 

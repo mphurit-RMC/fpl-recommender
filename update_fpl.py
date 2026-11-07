@@ -126,6 +126,11 @@ def main() -> None:
         dc90 = per90(defensive, minutes) if defensive is not None else None
 
         expected_next = p.get("ep_next")
+        starts_raw = stat_value(p, "starts")
+        starts = int(number(starts_raw)) if starts_raw not in (None, "") else None
+        chance_raw = p.get("chance_of_playing_next_round")
+        chance_next = int(number(chance_raw)) if chance_raw not in (None, "") else None
+
         players.append({
             "id": p.get("id"),
             "name": p.get("web_name") or p.get("second_name") or "Unknown",
@@ -140,6 +145,8 @@ def main() -> None:
             "ownership": round(number(p.get("selected_by_percent")), 1),
             "expected_points": round(number(expected_next), 1) if expected_next not in (None, "") else None,
             "minutes": minutes,
+            "starts": starts,
+            "chance_of_playing_next_round": chance_next,
             "status": status,
             "news": p.get("news") or "",
             "xg": xg, "xa": xa, "xgi": xgi, "xgc": xgc,

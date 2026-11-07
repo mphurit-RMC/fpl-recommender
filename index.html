@@ -55,6 +55,28 @@ textarea,.in{width:100%;font:inherit;padding:10px 12px;border-radius:10px;border
 .rank-name{font-weight:800}.rank-sub{font-size:.82rem;color:var(--mu)}.rank-data{display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:5px;font-size:.82rem}
 .rank-ep{font-weight:800;color:var(--ac)}.rank-tag{font-size:.72rem;border-radius:99px;padding:1px 8px;background:var(--wns);color:var(--wn);font-weight:700}
 .method-note{font-size:.8rem;color:var(--mu);border-left:3px solid var(--ln);padding-left:10px;margin:10px 0 14px}
+.position-summary{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}
+.position-summary span{font-size:.78rem;padding:4px 9px;border-radius:99px;background:var(--acs);color:var(--ac);font-weight:700}
+.priority-group{border:1px solid var(--ln);border-radius:14px;background:var(--sf);padding:12px;margin:0 0 12px}
+.priority-group h3{font-size:.98rem;margin:0 0 5px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.priority-group h3 small{font-size:.76rem;color:var(--mu);font-weight:600}
+.priority-card{padding:11px 0;border-top:1px solid var(--ln)}
+.priority-card:first-of-type{border-top:0}
+.priority-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.priority-player{font-weight:800}.priority-meta{font-size:.8rem;color:var(--mu)}
+.priority-rank{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 6px;border-radius:8px;background:var(--acs);color:var(--ac);font-weight:800;margin-right:6px}
+.priority-score{font-size:.78rem;font-weight:800;color:var(--ac);white-space:nowrap}
+.priority-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:8px 0 5px}
+.priority-metrics span{background:var(--bg);border-radius:8px;padding:5px 6px;text-align:center;font-size:.75rem;color:var(--mu)}
+.priority-metrics b{display:block;color:var(--ink);font-size:.9rem}
+.priority-fixture{font-size:.78rem;color:var(--mu)}
+.captain-choice{padding:10px 0;border-top:1px solid var(--ln)}
+.captain-choice:first-of-type{border-top:0}
+.captain-choice-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.captain-rank{font-weight:800;color:var(--ac);min-width:28px}
+.captain-role{font-size:.72rem;font-weight:800;border-radius:99px;padding:2px 8px;background:var(--acs);color:var(--ac)}
+.captain-role.vc{background:var(--wns);color:var(--wn)}
+.captain-score{font-size:.8rem;color:var(--ac);font-weight:800;white-space:nowrap}
 @media(min-width:700px){nav{justify-content:center}nav a{min-width:88px}}
 
 </style>
@@ -86,14 +108,14 @@ textarea,.in{width:100%;font:inherit;padding:10px 12px;border-radius:10px;border
 <h2>กัปตันประจำ Gameweek</h2>
 <p class="sub" id="captainSub">กำลังจัดอันดับตัวเลือกกัปตันจากข้อมูล FPL สด…</p>
 <div id="captainPanel"><div class="card"><p class="note">กำลังโหลดข้อมูลทางการเพื่อเลือกกัปตัน</p></div></div>
-<div class="method-note">หลักการ: คัดเฉพาะ MID/FWD ที่สถานะพร้อมเล่น มีเวลาในสนามอย่างน้อย 180 นาที และมีคะแนนคาดการณ์จาก FPL มากกว่า 0 เรียงตาม EP_next ก่อน แล้วใช้ xGI/90 และความยากของคู่แข่งเป็นตัวตัดสินกรณีคะแนนใกล้กัน คะแนนคาดการณ์เป็นค่าของ FPL ไม่ใช่การรับประกันผล</div>
+<div class="method-note">แสดง 5 ตัวเลือกเรียงตาม Captain Score (0–100) · คัดเฉพาะ MID/FWD ที่พร้อมเล่น มีอย่างน้อย 270 นาที และมี EP_next มากกว่า 0 โดยใช้ EP percentile 35%, xGI/90 percentile 30%, ความง่ายของโปรแกรม 20% และความพร้อมด้านนาที/โอกาสลงเล่น 15% · อันดับ 1 เป็นตัวเลือกหลัก อันดับ 2 เป็น Vice-captain · คะแนนโมเดลเป็นเครื่องมือเปรียบเทียบ ไม่ใช่คะแนนคาดการณ์ทางการหรือการรับประกันผล</div>
 </section>
 
 <section id="rank30">
 <h2>Top 30 · ผู้เล่นน่าสนใจประจำสัปดาห์</h2>
 <p class="sub" id="rankSub">กำลังโหลดอันดับผู้เล่นสำหรับ Gameweek ถัดไป…</p>
 <div class="card" id="rankPanel"><p class="note">กำลังโหลดข้อมูล FPL สด</p></div>
-<div class="method-note">คัดผู้เล่นสถานะพร้อมเล่น/สงสัยบาดเจ็บที่มีเวลาในสนามอย่างน้อย 90 นาที แล้วเรียงตามคะแนนคาดการณ์ GW ถัดไปจาก Official FPL API (EP_next) มากไปน้อย หากคะแนนเท่ากัน ใช้ xGI/90, ความยากโปรแกรม (FDR) และนาทีลงสนามเป็นตัวเรียงเสริม ค่า xG/xA และ CS เป็นสถิติสะสมของฤดูกาล ไม่ใช่ค่าคาดการณ์เฉพาะนัด · Official FPL API ไม่มีค่า xCS รายบุคคลในชุดข้อมูลนี้ จึงไม่สร้างตัวเลข xCS ขึ้นเอง</div>
+<div class="method-note">Top 30 คัดจากทุกตำแหน่งโดยใช้ Model Score แล้วจัดกลุ่มแสดงเป็น GKP / DEF / MID / FWD ภายในแต่ละกลุ่มเรียงตาม Priority สูงไปต่ำ พร้อมคงอันดับรวมไว้ · ผู้เล่นนอกประตูใช้ EP 35%, xGI/90 30%, FDR 20%, นาที/ความพร้อม 15% · ผู้รักษาประตูไม่มี xGI จึงปรับน้ำหนักเป็น EP 50%, FDR 28.6%, นาที/ความพร้อม 21.4% · EP_next เป็นค่าทางการจาก FPL ส่วน Model Score เป็นคะแนนเปรียบเทียบของเว็บไซต์ · xG/xA/CS เป็นสถิติสะสม ไม่ใช่การคาดการณ์รายนัด และไม่มี xCS รายบุคคลใน API ชุดนี้</div>
 </section>
 
 <section id="overview" class="on">
@@ -275,56 +297,97 @@ function renderCaptainAndRank(){
   return;
  }
  const gw=Number(window.fplNextGameweek||LIVE_FPL_META?.current_gameweek||1);
- const number=v=>{const n=Number(v);return Number.isFinite(n)?n:null};
- const fixtureRowsFor=(p)=>((LIVE_FPL_FIXTURES[p.team]||[]).filter(f=>Number(f.event)===gw));
- const avgFdr=(p)=>{const fs=fixtureRowsFor(p);return fs.length?fs.reduce((sum,f)=>sum+(number(f.difficulty)??3),0)/fs.length:3};
- const fixtureText=(p)=>{
-  const fs=fixtureRowsFor(p);
-  if(!fs.length)return 'ยังไม่มีโปรแกรมที่ยืนยัน';
-  return fs.map(f=>`${f.opponent||'คู่แข่ง'} (${f.side==='H'?'เหย้า':'เยือน'}) FDR ${number(f.difficulty)??'—'}`).join(' · ');
- };
- const metrics=(p)=>{
-  const xg=number(p.expected_goals),xa=number(p.expected_assists),xgi90=number(p.xgi90),cs=number(p.clean_sheets),xgc=number(p.expected_goals_conceded);
-  const out=[];
-  if(xg!==null)out.push('xG '+xg.toFixed(2));
-  if(xa!==null)out.push('xA '+xa.toFixed(2));
-  if(xgi90!==null)out.push('xGI/90 '+xgi90.toFixed(2));
-  if((p.position==='DEF'||p.position==='GKP')&&cs!==null)out.push('CS จริง '+cs);
-  if((p.position==='DEF'||p.position==='GKP')&&xgc!==null)out.push('xGC '+xgc.toFixed(2));
-  return out.length?out.join(' · '):'สถิติ xG/xA ยังไม่มีใน API';
- };
- const eligible=LIVE_FPL_PLAYERS.map(p=>({
-   ...p,_ep:number(p.expected_points),_minutes:number(p.minutes)||0,
-   _xgi90:number(p.xgi90)||0,_fdr:avgFdr(p)
-  })).filter(p=>p._ep!==null&&p._ep>=0&&p._minutes>=90&&['a','d'].includes(p.status));
- const sorted=[...eligible].sort((a,b)=>
-   b._ep-a._ep || b._xgi90-a._xgi90 || a._fdr-b._fdr || b._minutes-a._minutes || String(a.name).localeCompare(String(b.name))
- );
- const top30=sorted.slice(0,30);
- const attackers=eligible.filter(p=>['MID','FWD'].includes(p.position)&&p.status==='a'&&p._minutes>=180&&p._ep>0)
-  .sort((a,b)=>b._ep-a._ep || b._xgi90-a._xgi90 || a._fdr-b._fdr || b._minutes-a._minutes);
- const captainChoices=attackers.slice(0,3);
+ const number=v=>{if(v===null||v===undefined||v==="")return null;const n=Number(v);return Number.isFinite(n)?n:null};
+ const clamp=(v,min=0,max=100)=>Math.max(min,Math.min(max,v));
  const fmt=(v,d=1)=>number(v)===null?'—':number(v).toFixed(d);
- const playerLine=(p,index,label)=>{
-  const status=p.status==='d'?'<span class="rank-tag">สงสัยบาดเจ็บ</span>':'';
-  const fixtures=fixtureText(p);
-  return `<div class="rank-item"><div class="rank-no">${index}</div><div><div><span class="rank-name">${p.name}</span> <span class="rank-sub">${p.team} · ${p.position} · £${fmt(p.price)}m</span> ${status}</div><div class="rank-data"><span class="rank-ep">FPL คาด ${fmt(p._ep)} แต้ม</span><span>ฟอร์ม ${fmt(p.form)}</span><span>${metrics(p)}</span></div><div class="rank-sub">${fixtures}</div></div></div>`;
+ const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+ const fixtureRowsFor=p=>((LIVE_FPL_FIXTURES[p.team]||[]).filter(f=>Number(f.event)===gw));
+ const avgFdr=p=>{const fs=fixtureRowsFor(p);return fs.length?fs.reduce((sum,f)=>sum+(number(f.difficulty)??3),0)/fs.length:null};
+ const fixtureScore=p=>{const fdr=avgFdr(p);return fdr===null?50:clamp((5-fdr)/4*100)};
+ const fixtureText=p=>{const fs=fixtureRowsFor(p);if(!fs.length)return 'ยังไม่มีโปรแกรมที่ยืนยัน';return fs.map(f=>`${esc(f.opponent||'คู่แข่ง')} (${f.side==='H'?'เหย้า':'เยือน'}) FDR ${number(f.difficulty)===null?'—':fmt(f.difficulty,0)}`).join(' · ')};
+ const percentile=(value,values)=>{
+  const v=number(value),valid=values.map(number).filter(x=>x!==null);
+  if(v===null||!valid.length)return 50;
+  if(valid.every(x=>x===valid[0]))return 50;
+  const less=valid.filter(x=>x<v).length,equal=valid.filter(x=>x===v).length;
+  return clamp((less+equal/2)/valid.length*100);
  };
- const gwLabel='GW'+gw;
- const captainSub=$("#captainSub");
- if(captainSub)captainSub.textContent='ตัวเลือกสำหรับ '+gwLabel+' · อ้างอิง EP_next ของ FPL และสถิติการมีส่วนร่วมกับประตู';
+ const completedGW=Math.max(1,Number(LIVE_FPL_META?.latest_finished_gameweek)||1);
+ const base=LIVE_FPL_PLAYERS.map(p=>{
+   const minutes=Math.max(0,number(p.minutes)||0);
+   const starts=number(p.starts);
+   let chance=number(p.chance_of_playing_next_round);
+   if(chance===null)chance=p.status==='a'?100:p.status==='d'?50:0;
+   const minutesRate=clamp(minutes/(90*completedGW)*100);
+   const startsRate=starts===null?minutesRate:clamp(starts/completedGW*100);
+   const availability=clamp(minutesRate*.45+startsRate*.35+clamp(chance)*.20);
+   return {...p,_ep:number(p.expected_points),_minutes:minutes,_starts:starts,_chance:chance,
+     _xgi90:number(p.xgi90),_fdr:avgFdr(p),_fixtureScore:fixtureScore(p),_availability:availability};
+  }).filter(p=>p._ep!==null&&p._ep>0&&p._minutes>=90&&['a','d'].includes(p.status));
+ const epPool=base.map(p=>p._ep);
+ const xgiPools={};
+ ['DEF','MID','FWD'].forEach(pos=>xgiPools[pos]=base.filter(p=>p.position===pos&&p._xgi90!==null).map(p=>p._xgi90));
+ base.forEach(p=>{
+   p._epPct=percentile(p._ep,epPool);
+   p._xgiPct=p.position==='GKP'?null:percentile(p._xgi90,xgiPools[p.position]||[]);
+   // Outfield weights: EP 35%, xGI/90 30%, fixture 20%, minutes/availability 15%.
+   // Goalkeepers have no meaningful xGI; the remaining weights are proportionally normalized.
+   p._model=p.position==='GKP'
+    ?(p._epPct*.50+p._fixtureScore*(20/70)+p._availability*(15/70))
+    :(p._epPct*.35+(p._xgiPct??50)*.30+p._fixtureScore*.20+p._availability*.15);
+  });
+ const sorted=[...base].sort((a,b)=>b._model-a._model||b._ep-a._ep||b._xgi90-a._xgi90||(a._fdr??3)-(b._fdr??3)||b._minutes-a._minutes);
+ const top30=sorted.slice(0,30);
+ const attackers=base.filter(p=>['MID','FWD'].includes(p.position)&&p.status==='a'&&p._minutes>=270&&p._ep>0&&p._chance>=75)
+  .sort((a,b)=>b._model-a._model||b._ep-a._ep||b._xgi90-a._xgi90||(a._fdr??3)-(b._fdr??3)||b._minutes-a._minutes);
+ const captainChoices=attackers.slice(0,5);
+ const metrics=p=>{
+  const out=[];
+  if(p.position!=='GKP'){
+   if(number(p.xg)!==null)out.push('xG '+fmt(p.xg,2));
+   if(number(p.xa)!==null)out.push('xA '+fmt(p.xa,2));
+   if(number(p.xgi90)!==null)out.push('xGI/90 '+fmt(p.xgi90,2));
+  }else{
+   if(number(p.clean_sheets)!==null)out.push('CS '+fmt(p.clean_sheets,0));
+   if(number(p.xgc)!==null)out.push('xGC '+fmt(p.xgc,2));
+  }
+  return out.length?out.join(' · '):'สถิติแยกตำแหน่งยังไม่มีใน API';
+ };
+ const candidateMeta=p=>`${esc(p.team)} · ${esc(p.position)} · £${fmt(p.price)}m · ฟอร์ม ${fmt(p.form)} · ลงเล่น ${fmt(p.minutes,0)} นาที`;
+ const capSub=$("#captainSub");
+ if(capSub)capSub.textContent=`ตัวเลือกกัปตัน 5 คนสำหรับ GW${gw} · เรียงตาม Captain Score (0–100) โดยแยกจาก EP_next ทางการ`;
  if(captainChoices.length){
-  const first=captainChoices[0];
-  capPanel.innerHTML=`<div class="captain-card"><div class="captain-label">ตัวเลือกกัปตันอันดับ 1 · ${gwLabel}</div><div class="row"><span class="name">${first.name}</span><span class="rank-ep">คาด ${fmt(first._ep)} แต้ม</span></div><div class="meta">${first.team} · ${first.position} · £${fmt(first.price)}m · ฟอร์ม ${fmt(first.form)}</div><div class="rank-data"><span>${metrics(first)}</span></div><p class="note">โปรแกรม: ${fixtureText(first)}</p><p class="note">แนะนำเป็นกัปตันจากอันดับ EP_next สูงสุดในกลุ่ม MID/FWD ที่พร้อมเล่น · คะแนนกัปตันในเกมจะคูณสอง</p></div>`+
-   (captainChoices.length>1?'<div class="card"><b>ตัวเลือกสำรอง / Vice-captain</b>'+captainChoices.slice(1).map((p,i)=>playerLine(p,i+2,i===0?'สำรอง':'ทางเลือก')).join('')+'</div>':'');
+  const main=captainChoices[0];
+  const role=i=>i===0?'กัปตันแนะนำ':i===1?'Vice-captain':'ตัวเลือกสำรอง';
+  const captainCard=(p,i)=>`<div class="captain-choice"><div class="captain-choice-top"><div><span class="captain-rank">${i+1}.</span><b>${esc(p.name)}</b> <span class="priority-meta">${esc(p.team)} · ${esc(p.position)} · £${fmt(p.price)}m</span> <span class="captain-role ${i===1?'vc':''}">${i===1?'Vice-captain':'ทางเลือก'}</span></div><span class="captain-score">Score ${fmt(p._model,1)}</span></div><div class="rank-data"><span class="rank-ep">FPL คาด ${fmt(p._ep)} แต้ม</span><span>ฟอร์ม ${fmt(p.form)}</span><span>${esc(metrics(p))}</span></div><div class="priority-fixture">${fixtureText(p)} · ${fmt(p._minutes,0)} นาที · โอกาสลงเล่น ${fmt(p._chance,0)}%</div></div>`;
+  capPanel.innerHTML=`<div class="captain-card"><div class="captain-label">อันดับ 1 · ${role(0)} · GW${gw}</div><div class="row"><span class="name">${esc(main.name)}</span><span class="rank-ep">FPL คาด ${fmt(main._ep)} แต้ม</span></div><div class="meta">${candidateMeta(main)}</div><div class="rank-data"><span>Captain Score ${fmt(main._model,1)}/100</span><span>${esc(metrics(main))}</span></div><p class="note">โปรแกรม: ${fixtureText(main)}</p><p class="note">ตัวเลือกกัปตันหลักจากคะแนนโมเดลรวม ไม่ใช่การรับประกันแต้ม x2</p></div>`+
+    `<div class="card"><b>ตัวเลือกกัปตันเรียงตามลำดับ 2–5</b>${captainChoices.slice(1).map((p,i)=>captainCard(p,i+1)).join('')}</div>`;
  }else{
-  capPanel.innerHTML='<div class="card"><p class="note">ยังไม่มีผู้เล่น MID/FWD ที่ผ่านเกณฑ์สถานะและมี EP_next มากกว่า 0 สำหรับแนะนำกัปตัน</p></div>';
+  capPanel.innerHTML='<div class="card"><p class="note">ยังไม่มีผู้เล่น MID/FWD ที่ผ่านเกณฑ์กัปตัน (พร้อมเล่น, อย่างน้อย 270 นาที, โอกาสลงเล่นอย่างน้อย 75% และ EP_next มากกว่า 0)</p></div>';
  }
+ const posLabel={GKP:'ผู้รักษาประตู (GKP)',DEF:'กองหลัง (DEF)',MID:'กองกลาง (MID)',FWD:'กองหน้า (FWD)'};
+ const positionOrder=['GKP','DEF','MID','FWD'];
+ const groups={};
+ top30.forEach(p=>{if(!groups[p.position])groups[p.position]=[];groups[p.position].push(p)});
+ const overallRank=new Map(top30.map((p,i)=>[p.id??(p.name+'|'+p.team),i+1]));
+ const rankCard=(p,posRank)=>{
+  const overall=overallRank.get(p.id??(p.name+'|'+p.team));
+  const caution=p.status==='d'?'<span class="rank-tag">สงสัยบาดเจ็บ</span>':'';
+  const gk=p.position==='GKP';
+  const xgBits=gk
+   ?`<span><b>${number(p.clean_sheets)===null?'—':fmt(p.clean_sheets,0)}</b>CS</span><span><b>${number(p.xgc)===null?'—':fmt(p.xgc,2)}</b>xGC</span><span><b>${fmt(p._fdr,1)}</b>FDR</span>`
+   :`<span><b>${number(p.xg)===null?'—':fmt(p.xg,2)}</b>xG</span><span><b>${number(p.xa)===null?'—':fmt(p.xa,2)}</b>xA</span><span><b>${number(p.xgi90)===null?'—':fmt(p.xgi90,2)}</b>xGI/90</span>`;
+  return `<div class="priority-card"><div class="priority-head"><div><span class="priority-rank">${overall}</span><span class="priority-player">${esc(p.name)}</span> ${caution}<div class="priority-meta">อันดับ ${posRank} ใน ${esc(p.position)} · ${esc(p.team)} · £${fmt(p.price)}m</div></div><span class="priority-score">Score ${fmt(p._model,1)}</span></div><div class="priority-metrics"><span><b>${fmt(p._ep)} แต้ม</b>FPL EP</span><span><b>${fmt(p.form)}</b>ฟอร์ม</span><span><b>${fmt(p._minutes,0)}</b>นาที</span></div><div class="priority-metrics">${xgBits}</div><div class="priority-fixture">${fixtureText(p)}</div></div>`;
+ };
+ const posCounts=positionOrder.map(pos=>`${pos} ${groups[pos]?.length||0} คน`);
+ const groupHTML=positionOrder.filter(pos=>groups[pos]?.length).map(pos=>{
+   const players=groups[pos];
+   return `<div class="priority-group"><h3>${posLabel[pos]} <small>${players.length} คน · เรียงตาม Priority</small></h3>${players.map((p,i)=>rankCard(p,i+1)).join('')}</div>`;
+ }).join('');
  const rankSub=$("#rankSub");
- if(rankSub)rankSub.textContent=`อันดับสำหรับ ${gwLabel} · ${top30.length} คน · เรียง EP_next มากไปน้อย (ใช้ xGI/90 และ FDR เป็นตัวตัดสินกรณีเสมอ)`;
- rankPanel.innerHTML=top30.length?top30.map((p,i)=>playerLine(p,i+1)).join(''):'<p class="note">ยังไม่มีผู้เล่นที่มี EP_next และเวลาในสนามตามเกณฑ์สำหรับจัดอันดับ</p>';
+ if(rankSub)rankSub.textContent=`Top ${top30.length} สำหรับ GW${gw} · เลือกด้วย Model Score และแยกตามตำแหน่ง · อันดับบนการ์ดคืออันดับรวม ส่วน “อันดับในตำแหน่ง” คืออันดับภายในกลุ่ม`;
+ rankPanel.innerHTML=top30.length?`<div class="position-summary">${posCounts.map(x=>`<span>${x}</span>`).join('')}</div>${groupHTML}`:'<p class="note">ยังไม่มีผู้เล่นที่ผ่านเกณฑ์ EP_next มากกว่า 0 และลงเล่นอย่างน้อย 90 นาที</p>';
 }
-
 function team(){let id="",own=[];
  try{id=localStorage.getItem("fpl_id")||"";own=JSON.parse(localStorage.getItem("fpl_own2")||"[]")}catch(e){}
  const sv=()=>{try{localStorage.setItem("fpl_id",id);localStorage.setItem("fpl_own2",JSON.stringify(own))}catch(e){}},nz=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(),K=r=>r[0]+"|"+r[1],inp=$("#eid");inp.value=id;

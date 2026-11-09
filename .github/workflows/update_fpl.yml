@@ -1,0 +1,42 @@
+name: Refresh FPL data
+
+on:
+  schedule:
+    # Every 3 hours (UTC), so a finished gameweek and price changes appear within a few hours
+    - cron: '15 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fpl-data-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Fetch official FPL data
+        run: python update_fpl.py
+
+      - name: Commit refreshed data
+        run: |
+          git add data.json
+          if git diff --cached --quiet -- data.json; then
+            echo 'FPL data unchanged; no commit needed.'
+          else
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m "chore: refresh FPL data"
+            git push
+          fi

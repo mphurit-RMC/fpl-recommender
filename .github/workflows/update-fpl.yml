@@ -1,9 +1,9 @@
-
 name: Refresh FPL data
 
 on:
   schedule:
-    - cron: '15 21 * * *'
+    # Every 3 hours (UTC), so a finished gameweek and price changes appear within a few hours
+    - cron: '15 */3 * * *'
   workflow_dispatch:
 
 permissions:
@@ -32,7 +32,7 @@ jobs:
       - name: Commit refreshed data
         run: |
           git add data.json
-          if git diff --cached --quiet; then
+          if git diff --cached --quiet -- data.json; then
             echo 'FPL data unchanged; no commit needed.'
           else
             git config user.name 'github-actions[bot]'
